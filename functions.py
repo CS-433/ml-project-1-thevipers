@@ -3,18 +3,34 @@
 import numpy as np
 
 def compute_mse(e):
-    """Compute the mse for vector e."""
+    """Compute the Mean Square Error.
+    Take as input the error vector e. 
+    """
     mse = 1/2*np.mean(e**2)
     return mse
 
 def compute_gradient(y, tx, w):
-    """Compute the gradient."""
+    """
+    Compute the gradient with respect to w.
+    Takes as input the targeted y, the sample matrix tx and the feature vector w.
+    This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
+    """
     err = y - tx.dot(w)
     grad = -tx.T.dot(err) / len(err)
     return grad, err
 
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
-    """Gradient descent algorithm using the least squares."""
+    """
+    Compute an estimated solution of the problem y = tx @ w and the associated error using Gradient Descent. 
+    This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 is minimal. Note that 
+    this method may output a local minimum.
+    Takes as input:
+        * the targeted y
+        * the sample matrix tx
+        * the initial guess for w initial_w
+        * the maximal number of iterations for Gradient Descent max_iters
+        * the learning rate gamma
+    """
     # Define parameter to store the last weight vector
     w = initial_w
     for n_iter in range(max_iters):
@@ -25,12 +41,6 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     # compute loss    
     loss = compute_mse(err)
     return w, loss
-
-def compute_stoch_gradient(y, tx, w):
-    """Compute a stochastic gradient for batch data."""
-    err = y - tx.dot(w)
-    grad = -tx.T.dot(err) / len(err)
-    return grad, err
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -58,13 +68,23 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]    
 
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
-    """Stochastic gradient descent using the least squares."""
+    """
+    Compute an estimated solution of the problem y = tx @ w and the associated error using Stochastic Gradient Descent. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix tx
+        * the initial guess for w initial_w
+        * the batch_size, which is the number of samples on which the new gradient is computed. If set to 1 it corresponds
+        to Stochastic Gradient Descent, if set to the full number of samples it is identifical to least_squares_GD().
+        * the maximal number of iterations for Gradient Descent max_iters
+        * the learning rate gamma
+    """
     # Define parameters to store the last weight vector
     w = initial_w
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad, err = compute_stoch_gradient(y_batch, tx_batch, w)
+            grad, err = compute_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
             w = w - gamma * grad
             # calculate loss
@@ -73,7 +93,13 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 def least_squares(y, tx) :
-    """Compute the least squares solution."""
+    """
+     Compute a closed-form solution of the problem y = tx @ w, and the associated error. This method is equivalent 
+     to the minimization problem of finding w such that |y-tx@w||^2 is minimal.
+     Note that this methods provides the global optimum.
+     The error is the mean square error of the targeted y and the solution produced by the least square function.
+     Takes as input the targeted y, and the sample matrix tx.
+    """
     a = tx.T.dot(tx)
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
@@ -83,7 +109,14 @@ def least_squares(y, tx) :
     return w, loss
 
 def ridge_regression(y, tx, lambda_) :
-    """Implement ridge regression."""
+    """
+    Compute an estimated solution of the problem y = tx @ w , and the associated error. Note that this method
+    is a variant of least_square() but with a regularization term lambda_. 
+    This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 + lambda_*||w||^2 is minimal. 
+    The error is the mean square error of the targeted y and the solution produced by the least square function.
+    Takes as input the targeted y, the sample matrix X and the regularization term lambda_.
+    """
+       
     aI = lambda_ * np.identity(tx.shape[1])
     a = tx.T.dot(tx) + aI
     b = tx.T.dot(y)
@@ -92,6 +125,21 @@ def ridge_regression(y, tx, lambda_) :
     err = y - tx.dot(w)
     loss = compute_mse(err)   
     return w, loss
+
+def sigmoid(t):
+    """
+    Apply the sigmoid function on t.
+    """
+    return 1.0 / (1 + np.exp(-t))
+
+def calculate_loss(y, tx, w):
+    """
+    Compute the cost by negative log likelihood.
+    Takes as input the targeted y, the sample matrix tx and the feature fector w.
+    """
+    pred = sigmoid(tx.dot(w))
+    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    return np.squeeze(- loss)
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma) :
     
