@@ -59,37 +59,63 @@ def standardize(x, mean_x=None, std_x=None):
     if std_x is None:
         std_x = np.std(x, axis=0)
     
-    x_std = (x - mean_x)/std_x
+    #x_std = (x - mean_x)/std_x
+    x_std = x[:, std_x > 0] / std_x[std_x > 0]
     
     return x_std, mean_x, std_x
 
 
 #???? Do we need it ???? ÇA PEUT ÊTRE BIEN D'ENLEVER 1 DES 2 FEATURES SI IL Y EN A 2 QUI SONT CORRÉLÉES À 99% !
-def correlation() :
+#En vrai je suis d'accord, mais j'ai plus l'explication de pourquoi on devrait enlever les features hyper corrélées..
+def correlation(tx_train, tx_test, treshold=0.99) :
+    """
+    May be useful if we want to delete very correlated features
+    """
     
-    return 0
+    new_train = tx_train
+    new_test = tx_test
+    
+    correlation_matrix = np.corrcoef(tx_train)
+    corr_features = []
+    
+    for i in range(correlation_matrix.shape[0]):
+        for j in range(i):
+            if abs(correlation_matrix[i,j]) > treshold :
+                corr_features.append(i)
+    
+    new_train = np.delete(new_train, corr_features, axis=1)
+    new_test = np.delete(new_test, corr_features, axis=1)
+    
+    return new_train, new_test
 
-
+#MAIS DU COUP LÀ TU ENLÈVES LA COLONNE QUI CONTIENT UN OUTLIER ?!
+#IL FAUDRAIT PLUTÔT ENLEVER LE DIT SAMPLE PLUTÔT QUE LA FEATURE…
 def outliers(x) :
     """
-    MAIS DU COUP LÀ TU ENLÈVES LA COLONNE QUI CONTIENT UN OUTLIER ?!
-    IL FAUDRAIT PLUTÔT ENLEVER LE DIT SAMPLE PLUTÔT QUE LA FEATURE…
     Delete the outliers which are aberrant values, usually due to some errors in the experiment or from the material, 
     usually not relevant and may impact the prediction.
     """
-    new_x=x
-    for i in range(x.shape[1]) :
-        idx = findOutliers(x[:, i])
-        np.delete(new_x, idx, axis=0)
-    return new_x
+    new_x=np.array(x)
+    idx_outliers = []
     
+    #Find all the outliers
+    for i in range(new_x.shape[1]) :
+        idxs = findOutliers(x[:, i])
+        for j, idx in enumerate(idxs) :
+            idx_outliers.append(idx)
+    
+    #delete the lines containing outliers
+    idx_outliers = np.array(set(idx_outliers))
+    idx_outliers = list(idx_outliers)
+    idx_outliers = np.array(idx_outliers)
+    new_x = np.delete(new_x, idx_outliers, axis=0)
+    return new_x
 
+
+#    À VÉRIFIER SI LÀ ON EST EN TRAIN DE COMPARER BIEN LES OUTLIERS COLONNE PAR COLONNE COMMENTAIRE PAS CORRECT
 def findOutliers(x, outlierConstant=1.5):
     """
-    À VÉRIFIER SI LÀ ON EST EN TRAIN DE COMPARER BIEN LES OUTLIERS COLONNE PAR COLONNE 
-    COMMENTAIRE PAS CORRECT
-    Cut the tails: if a value is smaller than alpha_percentile (bigger than 1-alpha_percentile) 
-    of its features replace it with that percentile
+    Find the outliers using the Interquartile (IQR) method
     Return the indices of the outliers
     """
     a = np.array(x)
