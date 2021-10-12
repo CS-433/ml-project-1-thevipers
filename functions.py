@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""some helper functions."""
+"""ML methods."""
 import numpy as np
 
 def compute_mse(e):
