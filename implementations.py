@@ -2,10 +2,12 @@
 """ML methods."""
 import numpy as np
 
-def compute_mse(e):
-    """Compute the Mean Square Error.
-    Take as input the error vector e. 
+def compute_mse(y, tx, w):
     """
+    Compute the Mean Square Error.
+    Take as input the targeted y, the sample matrix tx and the feature vector w. 
+    """
+    e = y - tx.dot(w)
     mse = 1/2*np.mean(e**2)
     return mse
 
@@ -39,7 +41,7 @@ def least_squares_GD(y, tx, initial_w, max_iters=10000, gamma=0.01):
         # gradient w by descent update
         w = w - gamma * grad
     # compute loss    
-    loss = compute_mse(err)
+    loss = compute_mse(y, tx, w)
     return w, loss
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
@@ -89,8 +91,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters=10000, gamma=0.01):
             w = w - gamma * grad
          
         # calculate loss  
-        err = y - tx.dot(w)
-        loss = compute_mse(err)
+        loss = compute_mse(y, tx, w)
     return w, loss
 
 def least_squares(y, tx) :
@@ -105,8 +106,7 @@ def least_squares(y, tx) :
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
     w = np.linalg.solve(a, b)
-    err = y - tx.dot(w)
-    loss = compute_mse(err)  
+    loss = compute_mse(y, tx, w)  
     return w, loss
 
 def ridge_regression(y, tx, lambda_=0.1) :
@@ -123,8 +123,7 @@ def ridge_regression(y, tx, lambda_=0.1) :
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
     w = np.linalg.solve(a, b)
-    err = y - tx.dot(w)
-    loss = compute_mse(err)   
+    loss = compute_mse(y, tx, w)   
     return w, loss
 
 def sigmoid(t):
