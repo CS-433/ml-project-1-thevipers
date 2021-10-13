@@ -21,7 +21,7 @@ def compute_gradient(y, tx, w):
     grad = -tx.T.dot(err) / len(err)
     return grad, err
 
-def least_squares_GD(y, tx, initial_w, max_iters=10000, gamma=0.01):
+def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Gradient Descent. 
     This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 is minimal. Note that 
@@ -33,6 +33,7 @@ def least_squares_GD(y, tx, initial_w, max_iters=10000, gamma=0.01):
         * the maximal number of iterations for Gradient Descent max_iters
         * the learning rate gamma
     """
+    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
     # Define parameter to store the last weight vector
     w = initial_w
     for n_iter in range(max_iters):
@@ -69,7 +70,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]    
 
-def least_squares_SGD(y, tx, initial_w, max_iters=10000, gamma=0.01):
+def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamma=0.01):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Stochastic Gradient Descent. 
     Takes as input:
@@ -77,10 +78,11 @@ def least_squares_SGD(y, tx, initial_w, max_iters=10000, gamma=0.01):
         * the sample matrix tx
         * the initial guess for w initial_w
         * the batch_size, which is the number of samples on which the new gradient is computed. If set to 1 it corresponds
-        to Stochastic Gradient Descent, if set to the full number of samples it is identifical to least_squares_GD().
-        * the maximal number of iterations for Gradient Descent max_iters
+        to Stochastic Gradient Descent, if set to the full number of samples it is identical to least_squares_GD()
+        * the maximal number of iterations for SGD max_iters
         * the learning rate gamma
     """
+    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
     # Define parameters to store the last weight vector
     w = initial_w
     for n_iter in range(max_iters):
@@ -162,7 +164,7 @@ def learning_by_gradient_descent(y, tx, w, gamma=0.01):
     w = w - gamma * grad
     return w, loss
 
-def logistic_regression(y, tx, initial_w, max_iters=10000, gamma=0.01, batch_size=1) :
+def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
     Compute an estimated solution of the problem y = sigmoid(tx @ w) and the associated error using Gradient Descent or SGD. 
     This method is equivalent to the minimization problem of finding w such that the negative log likelihood is minimal.
@@ -176,6 +178,8 @@ def logistic_regression(y, tx, initial_w, max_iters=10000, gamma=0.01, batch_siz
         * the batch_size, which is the number of samples on which the new gradient is computed.
         If set to 1 (by default) it corresponds to SGD, it set to the full number of samples it is Gradient Descent.
     """
+    # init parameters
+    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
     threshold = 1e-8
     losses = []
     w = initial_w
@@ -203,7 +207,7 @@ def learning_by_penalized_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     w = w - gamma * gradient
     return w, loss
 
-def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters=10000, gamma=0.01, batch_size=1) :
+def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
     Compute an estimated solution of the problem y = sigmoid(tx @ w) and the associated error using Gradient Descent. 
     Note that this method is a variant of logistic_regression() but with an added regularization term lambda_. 
@@ -220,6 +224,7 @@ def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters=10000, gamma=0
         to SGD, if set to the full number of samples it is Gradient Descent.
     """
     # init parameters
+    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
     threshold = 1e-8
     losses = []
     w = initial_w
