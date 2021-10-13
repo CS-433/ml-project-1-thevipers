@@ -111,6 +111,8 @@ def least_squares(y, tx) :
     loss = compute_mse(y, tx, w)  
     return w, loss
 
+#aI = lambda_ * np.identity(tx.shape[1]) si je me souviens bien dans le cours, je crois ça devrait être
+#lambda_/2*len(y)
 def ridge_regression(y, tx, lambda_=0.1) :
     """
     Compute an estimated solution of the problem y = tx @ w , and the associated error. Note that this method
@@ -153,6 +155,8 @@ def calculate_logistic_gradient(y, tx, w):
     grad = tx.T.dot(pred - y)
     return grad
 
+#ATTENTION : y a pas de function calculate calculate_loss, peut être ça devrait être calculate_logistic_loss ?
+#idem pour calculate_gradient
 def learning_by_gradient_descent(y, tx, w, gamma=0.01):
     """
     Do one step of gradient descent using logistic regression.
@@ -164,6 +168,7 @@ def learning_by_gradient_descent(y, tx, w, gamma=0.01):
     w = w - gamma * grad
     return w, loss
 
+#ATTENTION : commentaire à l'interieur
 def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
     Compute an estimated solution of the problem y = sigmoid(tx @ w) and the associated error using Gradient Descent or SGD. 
@@ -188,6 +193,7 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # get loss and update w.
             w, l_ = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
+            #ATTETION : pas besoin de recalculer la loss si déjà calculée dans learning_by_grad_des au dessus ??
             loss = calculate_logistic_loss(y, tx, w)
             losses.append(loss)
             # converge criterion
@@ -195,6 +201,7 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
                 return w, losses[-1] 
     return w, losses[-1]
 
+#On est d'accord là du coup ta pénalité c'est une ridge regression ?
 def learning_by_penalized_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     """
     Compute one step of gradient descent for regularized logistic regression.
