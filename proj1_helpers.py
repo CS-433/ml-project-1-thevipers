@@ -2,6 +2,7 @@
 """some helper functions for project 1."""
 import csv
 import numpy as np
+from implementations import *
 
 
 def load_csv_data(data_path, sub_sample=False):
@@ -24,13 +25,36 @@ def load_csv_data(data_path, sub_sample=False):
     return yb, input_data, ids
 
 
-def predict_labels(weights, data):
-    """Generates class predictions given weights, and a test data matrix"""
-    y_pred = np.dot(data, weights)
+def predict_labels(weights, x):
+    """
+    Generates class predictions given weights, and a test data matrix x.
+    """
+    y_pred = x@weights
     y_pred[np.where(y_pred <= 0)] = -1
     y_pred[np.where(y_pred > 0)] = 1
     
     return y_pred
+
+def predict_logistic_labels(weights, x):
+    """
+    Generates class predictions given weights, and a test data matrix x.
+    """
+    y_pred = sigmoid(data@weights)
+    y_pred[y_pred < 0.5] = -1
+    y_pred[y_pred > 0.5] = 1
+    
+    return y_pred
+
+def compute_loss(y_pred, y):
+    """
+    Computes the loss as the mean of mislabeled predictions.
+    """
+    sum = 0
+    for idx, y_val in enumerate(y):
+        if y_val != y_pred[idx]:
+            sum += 1
+
+    return sum / len(y)
 
 
 def create_csv_submission(ids, y_pred, name):
