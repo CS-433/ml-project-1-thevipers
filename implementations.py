@@ -111,8 +111,7 @@ def least_squares(y, tx) :
     loss = compute_mse(y, tx, w)  
     return w, loss
 
-#aI = lambda_ * np.identity(tx.shape[1]) si je me souviens bien dans le cours, je crois ça devrait être
-#lambda_/2*len(y)
+
 def ridge_regression(y, tx, lambda_=0.1) :
     """
     Compute an estimated solution of the problem y = tx @ w , and the associated error. Note that this method
@@ -122,7 +121,7 @@ def ridge_regression(y, tx, lambda_=0.1) :
     Takes as input the targeted y, the sample matrix X and the regularization term lambda_.
     """
        
-    aI = lambda_ * np.identity(tx.shape[1])
+    aI = 2*tx.shape[0]*lambda_ * np.identity(tx.shape[1])
     a = tx.T.dot(tx) + aI
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
