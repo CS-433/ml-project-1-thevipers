@@ -15,8 +15,7 @@ def offset(x) :
     return new_x
 
 
-#QUESTION : Est ce que les 0 sont aussi des missing values ????
-# Seulement dans la colonne PRI_jet_all_pt ??? J'AI POSÉ LA QUESTION !!
+#Mettre 0 pour ceux qui sont missing values car pas significatif
 def missing_values(tx_train, tx_test, threshold=0.9) :
     """
     Count the missing values of each feature and delete columns (features) above a certain threshold of missing values
@@ -47,7 +46,15 @@ def missing_values(tx_train, tx_test, threshold=0.9) :
             new_train = np.delete(new_train, col, axis=1)
             new_test = np.delete(new_test, col, axis=1)
             
+    print(tx_train.shape[1]-new_train.shape[1], ' features have been removed')
+            
     return new_train, new_test
+
+
+def remove_useless_features() :
+    #useless features à la main : 15, 16, 18, 20
+    #std = 0
+    return 0
 
 
 def standardize(x, mean_x=None, std_x=None):
@@ -59,8 +66,12 @@ def standardize(x, mean_x=None, std_x=None):
     if std_x is None:
         std_x = np.std(x, axis=0)
     
-    #x_std = (x - mean_x)/std_x
-    x_std = x[:, std_x > 0] / std_x[std_x > 0]
+    x_std = x - mean_x
+    x_std = x_std[:, std_x > 0] / std_x[std_x > 0]
+    
+    std_0 = std_x[std_x <=0]
+    if(len(std_0)>0) :
+        raise ValueError("DIVISION BY 0 : There are features with standard deviation equal to 0")
     
     return x_std, mean_x, std_x
 
@@ -105,11 +116,15 @@ def outliers(x) :
             idx_outliers.append(idx)
     
     #delete the lines containing outliers
-    idx_outliers = np.array(set(idx_outliers))
-    idx_outliers = list(idx_outliers)
-    idx_outliers = np.array(idx_outliers)
-    new_x = np.delete(new_x, idx_outliers, axis=0)
-    return new_x
+    if(len(idx_outliers)>0) :
+        idx_outliers = np.array(list(set(idx_outliers)))
+        new_x = np.delete(new_x, idx_outliers, axis=0)
+        print('With outliers : ', x.shape)
+        print('Without outliers : ', new_x.shape)
+        return new_x
+    else :
+        print('There are no significative outliers')
+        return new_x
 
 
 #    À VÉRIFIER SI LÀ ON EST EN TRAIN DE COMPARER BIEN LES OUTLIERS COLONNE PAR COLONNE COMMENTAIRE PAS CORRECT
@@ -135,6 +150,7 @@ def build_poly(X, degree):
     Feature engineering by polynomial expansion: add an intercept and for each feature,
     add a polynomial expansion from 1 to degree.
     """
+    #if length ....
     N, D = X.shape 
     phi = np.zeros((N,(D*degree)+1))
     # intercept
@@ -173,3 +189,6 @@ def process_data(x_train, x_test, alpha=0):
      
     return x_train, x_test
 
+
+#heavy tail -> log
+#symmetric -> abs
