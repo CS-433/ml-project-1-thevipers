@@ -36,7 +36,7 @@ def build_k_indices(y, k_fold, seed):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
-def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, max_iters=10000) : 
+def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, max_iters=500) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with linear regression using gradient descent.
     For each degree, we compute the best learning rate gamma and the associated best test error.

@@ -35,17 +35,24 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
         * the learning rate gamma
     """
     if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
-    # Define parameter to store the last weight vector
+    # Define parameters 
     w = initial_w
+    threshold = 1e-8
+    losses = []
     for n_iter in range(max_iters):
         # compute gradient
         grad, err = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
+        print('w : ', w)
     # compute loss  
     y_pred = predict_labels(w, tx)
     loss = compute_loss(y_pred, y)
-    return w, loss
+    print('loss', loss)
+    losses.append(loss)
+    if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
+                return w, losses[-1]
+    return w, losses[-1]
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -136,11 +143,6 @@ def ridge_regression(y, tx, lambda_=0.1) :
     loss = compute_loss(y_pred, y)  
     return w, loss
 
-def sigmoid(t):
-    """
-    Apply the sigmoid function on t.
-    """
-    return 1.0 / (1 + np.exp(-t))
 
 def calculate_logistic_loss(y, tx, w):
     """

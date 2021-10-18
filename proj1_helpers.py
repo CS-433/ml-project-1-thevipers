@@ -34,6 +34,13 @@ def predict_labels(weights, x):
     
     return y_pred
 
+def sigmoid(t):
+    """
+    Apply the sigmoid function on t.
+    """
+    return np.exp(t)/ (1 + np.exp(t))
+
+
 def predict_logistic_labels(weights, x):
     """
     Generates class predictions given weights, and a test data matrix x.
