@@ -168,9 +168,10 @@ def learning_by_gradient_descent(y, tx, w, gamma=0.01):
     Return the loss and the updated feature vector w.
     """
     grad = calculate_logistic_gradient(y, tx, w)
-    loss = calculate_logistic_loss(y, tx, w)
+    #loss = calculate_logistic_loss(y, tx, w)
     w = w - gamma * grad
-    return w, loss
+    #return w, loss
+    return w
 
 
 def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, batch_size=1) :
@@ -196,7 +197,8 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
     for iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # get loss and update w.
-            w, _ = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
+            #w, _ = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
+            w = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
             # compute loss  
             y_pred = predict_logistic_labels(w, tx)
             loss = compute_loss(y_pred, y) 
