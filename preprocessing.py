@@ -53,10 +53,10 @@ def missing_values(tx_train, tx_test, threshold=0.9) :
             percentage = miss_vals/tx_train[:,0].shape
 
             # We will change every missing value in the column to the mean of the column (arbitrary choice) :
-            where = np.where(feature!=-999, True, False)
-            mean = np.mean(feature, where=where)
-            feature[feature==-999] = mean
-            new_train[:,col] = feature
+         #   where = np.where(feature!=-999, True, False)
+         #   mean = np.mean(feature, where=where)
+         #   feature[feature==-999] = mean
+         #   new_train[:,col] = feature
 
             #If the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
             #because the column is considered useless for the prediction
@@ -158,10 +158,10 @@ def outliers(x, y) :
         new_y = np.delete(new_y, idx_outliers, axis=0)
         print('With outliers : ', x.shape)
         print('Without outliers : ', new_x.shape)
-        return new_x
+        return new_x, new_y
     else :
         print('There are no significative outliers')
-        return new_x
+        return new_x, new_y
 
 
 
