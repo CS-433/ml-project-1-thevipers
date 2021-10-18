@@ -39,7 +39,7 @@ def predict_logistic_labels(weights, x):
     """
     Generates class predictions given weights, and a test data matrix x.
     """
-    y_pred = sigmoid(data@weights)
+    y_pred = sigmoid(x@weights)
     y_pred[y_pred < 0.5] = -1
     y_pred[y_pred > 0.5] = 1
     

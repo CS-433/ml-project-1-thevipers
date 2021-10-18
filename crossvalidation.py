@@ -2,8 +2,8 @@
 """cross validation"""
 import numpy as np
 from implementations import *
-from helpers import *
 from proj1_helpers import *
+from preprocessing import *
 
 def split_data(x, y, ratio, seed=1):
     """
@@ -36,7 +36,7 @@ def build_k_indices(y, k_fold, seed):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
-def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, max_iters=10000)
+def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, max_iters=10000) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with linear regression using gradient descent.
     For each degree, we compute the best learning rate gamma and the associated best test error.
@@ -78,13 +78,11 @@ def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, ini
                 # form data with polynomial degree
                 tx_tr = build_poly(x_tr, degree)
                 tx_te = build_poly(x_te, degree)
-                # ridge regression
-                w, _ = least_squares_GD(y_tr, tx_tr, initial_w, max_iters, gamma)
-                # calculate the accuracy for train and test data
-                y_pred_tr = predict_labels(w, tx_tr)
-                loss_tr = compute_loss(y_pred_tr, y)
+                # gradient descent
+                w, loss_tr = least_squares_GD(y_tr, tx_tr, initial_w, max_iters, gamma)
+                # calculate the loss for train and test data
                 y_pred_te = predict_labels(w, tx_te)
-                loss_te = compute_loss(y_pred_te, y)
+                loss_te = compute_loss(y_pred_te, y_te)
                 err_tr_tmp.append(loss_tr)
                 err_te_tmp.append(loss_te)
             # store the mean error over the k-folds for each lambda
@@ -101,7 +99,7 @@ def cross_validation_least_squares_GD(y, x, k_fold, gammas, degrees, seed=1, ini
         
     return degrees[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
     
-def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, batch_size=1, max_iters=10000)
+def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, batch_size=1, max_iters=10000) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with linear regression using
     stochastic gradient descent.
@@ -147,10 +145,8 @@ def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, in
                 tx_tr = build_poly(x_tr, degree)
                 tx_te = build_poly(x_te, degree)
                 # ridge regression
-                w, _ = least_squares_SGD(y_tr, tx_tr, initial_w, batch_size, max_iters, gamma)
-                # calculate the accuracy for train and test data
-                y_pred_tr = predict_labels(w, tx_tr)
-                loss_tr = compute_loss(y_pred_tr, y)
+                w, loss_tr = least_squares_SGD(y_tr, tx_tr, initial_w, batch_size, max_iters, gamma)
+                # calculate the loss for train and test data
                 y_pred_te = predict_labels(w, tx_te)
                 loss_te = compute_loss(y_pred_te, y)
                 err_tr_tmp.append(loss_tr)
@@ -170,7 +166,7 @@ def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, in
     return degrees[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
     
 
-def cross_validation_least_squares(y, x, k_fold, degrees, seed=1)
+def cross_validation_least_squares(y, x, k_fold, degrees, seed=1) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with least squares.
     The degree which lead to the minimal test error is returned with the associated minimum test error and train error.
@@ -203,12 +199,10 @@ def cross_validation_least_squares(y, x, k_fold, degrees, seed=1)
             tx_tr = build_poly(x_tr, degree)
             tx_te = build_poly(x_te, degree)
             # least squares
-            w, _ = least_squares(y_tr, tx_tr)
+            w, loss_tr = least_squares(y_tr, tx_tr)
             # calculate the accuracy for train and test data
-            y_pred_tr = predict_labels(w, tx_tr)
-            loss_tr = compute_loss(y_pred_tr, y)
             y_pred_te = predict_labels(w, tx_te)
-            loss_te = compute_loss(y_pred_te, y)
+            loss_te = compute_loss(y_pred_te, y_te)
             err_tr_tmp.append(loss_tr)
             err_te_tmp.append(loss_te)
         # store the mean error over the k-folds for each degree
@@ -220,7 +214,7 @@ def cross_validation_least_squares(y, x, k_fold, degrees, seed=1)
     return degrees[ind_best_degree], err_te[ind_best_degree], err_tr[ind_best_degree]
     
 
-def cross_validation_ridge_regression(y, x, k_fold, lambdas, degrees, seed=1)
+def cross_validation_ridge_regression(y, x, k_fold, lambdas, degrees, seed=1) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with ridge regression.
     For each degree, we compute the best lambda and the associated best error.
@@ -261,12 +255,10 @@ def cross_validation_ridge_regression(y, x, k_fold, lambdas, degrees, seed=1)
                 tx_tr = build_poly(x_tr, degree)
                 tx_te = build_poly(x_te, degree)
                 # ridge regression
-                w, _ = ridge_regression(y_tr, tx_tr, lambda_)
-                # calculate the accuracy for train and test data
-                y_pred_tr = predict_labels(w, tx_tr)
-                loss_tr = compute_loss(y_pred_tr, y)
+                w, loss_tr = ridge_regression(y_tr, tx_tr, lambda_)
+                # calculate the loss for train and test data
                 y_pred_te = predict_labels(w, tx_te)
-                loss_te = compute_loss(y_pred_te, y)
+                loss_te = compute_loss(y_pred_te, y_te)
                 err_tr_tmp.append(loss_tr)
                 err_te_tmp.append(loss_te)
             # store the mean error over the k-folds for each lambda
@@ -284,7 +276,7 @@ def cross_validation_ridge_regression(y, x, k_fold, lambdas, degrees, seed=1)
     return degrees[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
     
     
-def cross_validation_logistic_regression(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, batch_size=1, max_iters=10000)
+def cross_validation_logistic_regression(y, x, k_fold, gammas, degrees, seed=1, initial_w=None, batch_size=1, max_iters=10000) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with logistic regression using
     gradient descent or SGD. 
@@ -333,9 +325,9 @@ def cross_validation_logistic_regression(y, x, k_fold, gammas, degrees, seed=1, 
                 w, _ = logistic_regression(y_tr, tx_tr, initial_w, max_iters, gamma, batch_size)
                 # calculate the accuracy for train and test data
                 y_pred_tr = predict_logistic_labels(w, tx_tr)
-                loss_tr = compute_loss(y_pred_tr, y)
+                loss_tr = compute_loss(y_pred_tr, y_tr)
                 y_pred_te = predict_logistic_labels(w, tx_te)
-                loss_te = compute_loss(y_pred_te, y)
+                loss_te = compute_loss(y_pred_te, y_te)
                 err_tr_tmp.append(loss_tr)
                 err_te_tmp.append(loss_te)
             # store the mean error over the k-folds for each lambda
@@ -354,7 +346,7 @@ def cross_validation_logistic_regression(y, x, k_fold, gammas, degrees, seed=1, 
     
 
 def cross_validation_reg_logistic_regression(y, x, k_fold, gamma, lambdas, degrees, seed=1, initial_w=None, batch_size=1,
-                                             max_iters=10000)
+                                             max_iters=10000) : 
     """
     Perform k-fold cross-validation to select the best model among various degrees with regularized logistic regression.
     For each degree, we compute the best lambda and the associated best error.
@@ -403,9 +395,9 @@ def cross_validation_reg_logistic_regression(y, x, k_fold, gamma, lambdas, degre
                 w, _ = reg_logistic_regression(y_tr, tx_tr, lambda_, initial_w, max_iters, gamma, batch_size)
                 # calculate the accuracy for train and test data
                 y_pred_tr = predict_labels(w, tx_tr)
-                loss_tr = compute_loss(y_pred_tr, y)
+                loss_tr = compute_loss(y_pred_tr, y_tr)
                 y_pred_te = predict_labels(w, tx_te)
-                loss_te = compute_loss(y_pred_te, y)
+                loss_te = compute_loss(y_pred_te, y_te)
                 err_tr_tmp.append(loss_tr)
                 err_te_tmp.append(loss_te)
             # store the mean error over the k-folds for each lambda

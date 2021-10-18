@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ML methods."""
 import numpy as np
+from proj1_helpers import *
 
 def compute_mse(y, tx, w):
     """
@@ -17,9 +18,9 @@ def compute_gradient(y, tx, w):
     Takes as input the targeted y, the sample matrix tx and the feature vector w.
     This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
     """
-    err = y - tx.dot(w)
-    grad = -tx.T.dot(err) / len(err)
-    return grad, err
+    e = y - tx.dot(w)
+    grad = -tx.T.dot(e) / len(e)
+    return grad, e
 
 def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     """
@@ -41,8 +42,9 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
         grad, err = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
-    # compute loss    
-    loss = compute_mse(y, tx, w)
+    # compute loss  
+    y_pred = predict_labels(w, tx)
+    loss = compute_loss(y_pred, y)
     return w, loss
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
@@ -92,8 +94,9 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
             # update w through the stochastic gradient update
             w = w - gamma * grad
          
-        # calculate loss  
-        loss = compute_mse(y, tx, w)
+        # compute loss  
+        y_pred = predict_labels(w, tx)
+        loss = compute_loss(y_pred, y)
     return w, loss
 
 def least_squares(y, tx) :
@@ -107,8 +110,10 @@ def least_squares(y, tx) :
     a = tx.T.dot(tx)
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
-    w = np.linalg.solve(a, b)
-    loss = compute_mse(y, tx, w)  
+    w = np.linalg.lstsq(a, b, rcond=None)[0]
+    # compute loss  
+    y_pred = predict_labels(w, tx)
+    loss = compute_loss(y_pred, y) 
     return w, loss
 
 
@@ -126,7 +131,9 @@ def ridge_regression(y, tx, lambda_=0.1) :
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
     w = np.linalg.solve(a, b)
-    loss = compute_mse(y, tx, w)   
+    # compute loss  
+    y_pred = predict_labels(w, tx)
+    loss = compute_loss(y_pred, y)  
     return w, loss
 
 def sigmoid(t):
@@ -160,8 +167,8 @@ def learning_by_gradient_descent(y, tx, w, gamma=0.01):
     Takes as input the targeted y, the sample matrix tx, the feature w and the learning rate gamma.
     Return the loss and the updated feature vector w.
     """
-    loss = calculate_logistic_loss(y, tx, w)
     grad = calculate_logistic_gradient(y, tx, w)
+    loss = calculate_logistic_loss(y, tx, w)
     w = w - gamma * grad
     return w, loss
 
@@ -186,12 +193,13 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
     losses = []
     w = initial_w
     # start the logistic regression
-    for iter in range(max_iter):
+    for iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # get loss and update w.
             w, _ = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
-            loss = calculate_logistic_loss(y, tx, w)
-            losses.append(loss)
+            # compute loss  
+            y_pred = predict_logistic_labels(w, tx)
+            loss = compute_loss(y_pred, y) 
             # converge criterion
             if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold) :
                 return w, losses[-1] 
