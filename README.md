@@ -1,5 +1,5 @@
 # ML_project1
-Machine Learning Project 1 : Higgs Boson Machine Learning Challenge
+Machine Learning Project 1 : Higgs Boson Machine Learning Challenge \<cr>
 Name : Camille Frayssinhes, Assia Ouanaya, Theau Vannier
 ***
 ## Summary
