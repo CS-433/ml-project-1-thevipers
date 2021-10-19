@@ -1,2 +1,20 @@
 # ML_project1
-Projet 1 de Machine Learning
+Machine Learning Project 1 : Higgs Boson Machine Learning Challenge
+Name : Camille Frayssinhes, Assia Ouanaya, Theau Vannier
+***
+# Summary
+
+***
+# Exploration
+
+***
+# Feature processing
+
+***
+# ML Methods
+
+***
+# How To Generate the Solution
+
+***
+# Additional comments and observations
