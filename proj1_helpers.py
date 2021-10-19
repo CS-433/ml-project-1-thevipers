@@ -38,7 +38,7 @@ def sigmoid(t):
     """
     Apply the sigmoid function on t.
     """
-    return np.exp(t)/ (1 + np.exp(t))
+    return 1/ (1 + np.exp(-t))
 
 
 def predict_logistic_labels(weights, x):

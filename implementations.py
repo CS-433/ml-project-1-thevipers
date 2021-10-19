@@ -91,7 +91,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
         * the maximal number of iterations for SGD max_iters
         * the learning rate gamma
     """
-    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
+    if np.all(initial_w == None): initial_w = np.random.rand(tx.shape[1])
     # Define parameters to store the last weight vector
     w = initial_w
     for n_iter in range(max_iters):
