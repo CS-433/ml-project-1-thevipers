@@ -25,8 +25,7 @@ def compute_gradient(y, tx, w):
 def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Gradient Descent. 
-    This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 is minimal. Note that 
-    this method may output a local minimum.
+    Note that this method may output a local minimum.
     Takes as input:
         * the targeted y
         * the sample matrix tx
@@ -41,14 +40,12 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     losses = []
     for n_iter in range(max_iters):
         # compute gradient
-        grad, err = compute_gradient(y, tx, w)
+        grad = calculate_logistic_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
-        print('w : ', w)
     # compute loss  
     y_pred = predict_labels(w, tx)
     loss = compute_loss(y_pred, y)
-    print('loss', loss)
     losses.append(loss)
     if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
                 return w, losses[-1]
@@ -97,10 +94,9 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad, e = compute_gradient(y_batch, tx_batch, w)
+            grad = calculate_logistic_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
-            w = w - gamma * grad
-         
+            w = w - gamma * grad 
         # compute loss  
         y_pred = predict_labels(w, tx)
         loss = compute_loss(y_pred, y)
@@ -163,18 +159,6 @@ def calculate_logistic_gradient(y, tx, w):
     grad = tx.T.dot(pred - y)
     return grad
 
-def learning_by_gradient_descent(y, tx, w, gamma=0.01):
-    """
-    Do one step of gradient descent using logistic regression.
-    Takes as input the targeted y, the sample matrix tx, the feature w and the learning rate gamma.
-    Return the loss and the updated feature vector w.
-    """
-    grad = calculate_logistic_gradient(y, tx, w)
-    #loss = calculate_logistic_loss(y, tx, w)
-    w = w - gamma * grad
-    #return w, loss
-    return w
-
 
 def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
@@ -199,8 +183,8 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
     for iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # get loss and update w.
-            #w, _ = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
-            w = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
+            grad = calculate_logistic_gradient(y, tx, w)
+            w = w - gamma * grad
             # compute loss  
             y_pred = predict_logistic_labels(w, tx)
             loss = compute_loss(y_pred, y) 
@@ -217,10 +201,11 @@ def learning_by_penalized_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     regularization term lambda_.
     Return the loss and the updated feature vector w.
     """
-    loss = calculate_logistic_loss(y, tx, w) + lambda_*np.squeeze(w.T.dot(w))
+    #loss = calculate_logistic_loss(y, tx, w) + lambda_*np.squeeze(w.T.dot(w))
     gradient = calculate_logistic_gradient(y, tx, w) + 2*lambda_*w
     w = w - gamma * gradient
-    return w, loss
+    #return w, loss
+    return w
 
 def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
@@ -248,9 +233,12 @@ def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, ga
     for iter in range(max_iters):
         # get loss and update w.
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
-            w, l_ = learning_by_penalized_gradient_descent(y_batch, tx_batch, w, gamma, lambda_)
+            #w, l_ = learning_by_penalized_gradient_descent(y_batch, tx_batch, w, gamma, lambda_)
+            w = learning_by_penalized_gradient(y_batch, tx_batch, w, gamma, lambda_)
             # converge criterion
-            loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
+            #loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
+            y_pred = predict_logistic_labels(w, tx)
+            loss = compute_loss(y_pred, y) 
             losses.append(loss)
             if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
                 return w, losses[-1]
