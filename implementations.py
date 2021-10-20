@@ -3,6 +3,9 @@
 import numpy as np
 from proj1_helpers import *
 
+
+##########
+#losses :
 def compute_mse(y, tx, w):
     """
     Compute the Mean Square Error.
@@ -11,6 +14,38 @@ def compute_mse(y, tx, w):
     e = y - tx.dot(w)
     mse = 1/2*np.mean(e**2)
     return mse
+
+def compute_rmse(y, tx, w):
+    """
+    Compute the Mean Square Error.
+    Take as input the targeted y, the sample matrix tx and the feature vector w. 
+    """
+    e = y - tx.dot(w)
+    mse = 1/2*np.mean(e**2)
+    rmse = np.sqrt(2*mse)
+    return rmse
+
+def calculate_logistic_loss(y, tx, w):
+    """
+    Compute the cost by negative log likelihood.
+    Takes as input the targeted y, the sample matrix tx and the feature fector w.
+    """
+    pred = sigmoid(tx.dot(w))
+    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    return np.squeeze(- loss)
+
+#A checker si fonctionne
+def accuracy(y, tx, w, log=False) :
+    if(log) :
+        y_pred = predict_logistic_labels(weights, x)
+    else :
+        y_pred = predict_labels(weights, x)
+    accuracy = np.mean(np.abs(y-y_pred))
+    return accuracy
+
+
+##########
+#Method :
 
 def compute_gradient(y, tx, w):
     """
@@ -21,6 +56,9 @@ def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
     grad = -tx.T.dot(e) / len(e)
     return grad, e
+
+###########
+#Least squares :
 
 def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     """
@@ -119,6 +157,8 @@ def least_squares(y, tx) :
     loss = compute_loss(y_pred, y) 
     return w, loss
 
+##########
+#Linear regression (ridge)
 
 def ridge_regression(y, tx, lambda_=0.1) :
     """
@@ -139,15 +179,8 @@ def ridge_regression(y, tx, lambda_=0.1) :
     loss = compute_loss(y_pred, y)  
     return w, loss
 
-
-def calculate_logistic_loss(y, tx, w):
-    """
-    Compute the cost by negative log likelihood.
-    Takes as input the targeted y, the sample matrix tx and the feature fector w.
-    """
-    pred = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
-    return np.squeeze(- loss)
+##########
+#Logistic :
 
 def calculate_logistic_gradient(y, tx, w):
     """
