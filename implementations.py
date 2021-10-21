@@ -232,6 +232,7 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
             # compute loss  
             y_pred = predict_logistic_labels(w, tx)
             loss = compute_loss(y_pred, y) 
+            losses.append(loss)
             # converge criterion
             if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold) :
                 return w, losses[-1] 
