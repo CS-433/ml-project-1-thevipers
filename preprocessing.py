@@ -226,6 +226,12 @@ def process_data(x_train, x_test, alpha=0):
      
     return x_train, x_test
 
+"""
+def split_jet(train_x, train_y, tes_x, test_y) :
+    
+    
+    return train_x_0, train_x_1, train_x_2, train_y_0, train_y_1, train_y_2, test_x_0, test_x_1, test_x_2, test_y_0, test_y_1, test_y_2,  
+"""
 
 #heavy tail -> log
 #symmetric -> abs

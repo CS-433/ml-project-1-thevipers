@@ -37,9 +37,9 @@ def calculate_logistic_loss(y, tx, w):
 #A checker si fonctionne
 def accuracy(y, tx, w, log=False) :
     if(log) :
-        y_pred = predict_logistic_labels(weights, x)
+        y_pred = predict_logistic_labels(w, tx)
     else :
-        y_pred = predict_labels(weights, x)
+        y_pred = predict_labels(w, tx)
     accuracy = np.mean(np.abs(y-y_pred))
     return accuracy
 
