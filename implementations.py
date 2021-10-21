@@ -53,34 +53,41 @@ def compute_gradient(y, tx, w):
     Takes as input the targeted y, the sample matrix tx and the feature vector w.
     This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
     """
+    print('y', y.shape)
+    print('tx', tx.shape)
+    #print('w', w.shape)
     e = y - tx.dot(w)
     grad = -tx.T.dot(e) / len(e)
     return grad, e
 
+
 ###########
 #Least squares :
 
-def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
+def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.1):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Gradient Descent. 
-    Note that this method may output a local minimum.
+    This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 is minimal. Note that 
+    this method may output a local minimum, while least_squares() provides the global minimum.
     Takes as input:
         * the targeted y
-        * the sample matrix tx
-        * the initial guess for w initial_w
-        * the maximal number of iterations for Gradient Descent max_iters
+        * the sample matrix w
+        * the initial guess for w, by default set as a vector of zeros
+        * the number of iterations for Gradient Descent
         * the learning rate gamma
     """
-    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
-    # Define parameters 
-    w = initial_w
-    threshold = 1e-8
+    # Define parameters to store w and loss
+    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])  
+    ws = [initial_w] # Initial guess w0 generated randomly
+    w = ws[0]
     losses = []
     for n_iter in range(max_iters):
-        # compute gradient
-        grad = calculate_logistic_gradient(y, tx, w)
+        # compute loss, gradient
+        grad, err = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
+        # store w and loss
+        ws.append(w)
     # compute loss  
     y_pred = predict_labels(w, tx)
     loss = compute_loss(y_pred, y)
@@ -88,6 +95,9 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
                 return w, losses[-1]
     return w, losses[-1]
+
+    
+    return (gradient_ws[-1], losses[-1])
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -128,17 +138,22 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     """
     if np.all(initial_w == None): initial_w = np.random.rand(tx.shape[1])
     # Define parameters to store the last weight vector
+    ws = [initial_w]
+    losses = []
     w = initial_w
+    #print('w',w.shape)
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad = calculate_logistic_gradient(y_batch, tx_batch, w)
+            grad, _ = compute_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
-            w = w - gamma * grad 
+            w = w - gamma * grad
+            # store w and loss
+            ws.append(w)
         # compute loss  
         y_pred = predict_labels(w, tx)
         loss = compute_loss(y_pred, y)
-    return w, loss
+    return ws, loss
 
 def least_squares(y, tx) :
     """
