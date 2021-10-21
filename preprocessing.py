@@ -40,30 +40,30 @@ def missing_values(tx_train, tx_test, threshold=0.9) :
         
         feature = new_train[:, col]
         
-        if (col in meaningless0) :
-            feature[(feature==-999) & (new_train[:, 22]==0.)] = 0
-            new_train[:,col] = feature
-        if (col in meaningless1) :
-            feature[(feature==-999) & (new_train[:, 22]==1.)] = 0
-            new_train[:,col] = feature
+     #   if (col in meaningless0) :
+     #       feature[(feature==-999) & (new_train[:, 22]==0.)] = 0
+     #       new_train[:,col] = feature
+     #   if (col in meaningless1) :
+     #       feature[(feature==-999) & (new_train[:, 22]==1.)] = 0
+     #      new_train[:,col] = feature
             
-        else :
-            # We calculate what percentage of missing values there is in each column :
-            miss_vals = np.sum(tx_train[:,col]==-999)/999
-            percentage = miss_vals/tx_train[:,0].shape
+     #   else :
+        # We calculate what percentage of missing values there is in each column :
+        miss_vals = np.sum(tx_train[:,col]==-999)/999
+        percentage = miss_vals/tx_train[:,0].shape
 
-            # We will change every missing value in the column to the mean of the column (arbitrary choice) :
-            where = np.where(feature!=-999, True, False)
-            mean = np.mean(feature, where=where)
-            feature[feature==-999] = mean
-            new_train[:,col] = feature
+        # We will change every missing value in the column to the mean of the column (arbitrary choice) :
+        where = np.where(feature!=-999, True, False)
+        mean = np.mean(feature, where=where)
+        feature[feature==-999] = mean
+        new_train[:,col] = feature
 
-            #If the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
-            #because the column is considered useless for the prediction
-            if(percentage >= threshold) :
-                new_train = np.delete(new_train, col, axis=1)
-                new_test = np.delete(new_test, col, axis=1)
-            
+        #If the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
+        #because the column is considered useless for the prediction
+        if(percentage >= threshold) :
+            new_train = np.delete(new_train, col, axis=1)
+            new_test = np.delete(new_test, col, axis=1)
+
     print(tx_train.shape[1]-new_train.shape[1], ' features have been removed')
             
     return new_train, new_test
