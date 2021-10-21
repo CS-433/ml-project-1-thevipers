@@ -53,9 +53,6 @@ def compute_gradient(y, tx, w):
     Takes as input the targeted y, the sample matrix tx and the feature vector w.
     This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
     """
-    print('y', y.shape)
-    print('tx', tx.shape)
-    #print('w', w.shape)
     e = y - tx.dot(w)
     grad = -tx.T.dot(e) / len(e)
     return grad, e
@@ -141,7 +138,6 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     ws = [initial_w]
     losses = []
     w = initial_w
-    print('w',w.shape)
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss

@@ -148,7 +148,7 @@ def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, in
                 w, loss_tr = least_squares_SGD(y_tr, tx_tr, initial_w, batch_size, max_iters, gamma)
                 # calculate the loss for train and test data
                 y_pred_te = predict_labels(w, tx_te)
-                loss_te = compute_loss(y_pred_te, y)
+                loss_te = compute_loss(y_pred_te, y_te)
                 err_tr_tmp.append(loss_tr)
                 err_te_tmp.append(loss_te)
             # store the mean error over the k-folds for each lambda
