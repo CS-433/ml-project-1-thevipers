@@ -141,7 +141,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     ws = [initial_w]
     losses = []
     w = initial_w
-    #print('w',w.shape)
+    print('w',w.shape)
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
@@ -153,7 +153,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
         # compute loss  
         y_pred = predict_labels(w, tx)
         loss = compute_loss(y_pred, y)
-    return ws, loss
+    return ws[-1], loss
 
 def least_squares(y, tx) :
     """
