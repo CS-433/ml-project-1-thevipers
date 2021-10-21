@@ -145,11 +145,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-<<<<<<< HEAD
-            grad, _ = compute_gradient(y_batch, tx_batch, w)
-=======
             grad,e = compute_gradient(y_batch, tx_batch, w)
->>>>>>> a914d480e0547f73224e5141e83e976a3edb7c5a
             # update w through the stochastic gradient update
             w = w - gamma * grad
             # store w and loss
