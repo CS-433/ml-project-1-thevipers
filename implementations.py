@@ -30,8 +30,8 @@ def calculate_logistic_loss(y, tx, w):
     Compute the cost by negative log likelihood.
     Takes as input the targeted y, the sample matrix tx and the feature fector w.
     """
-    pred = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    eta = sigmoid(tx.dot(w))
+    loss = y.T.dot(np.log(eta)) + (1 - y).T.dot(np.log(1 - eta))
     return np.squeeze(- loss)
 
 #A checker si fonctionne
@@ -78,7 +78,7 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=10000, gamma=0.01):
     losses = []
     for n_iter in range(max_iters):
         # compute gradient
-        grad = calculate_logistic_gradient(y, tx, w)
+        grad, e = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
     # compute loss  
@@ -132,7 +132,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad = calculate_logistic_gradient(y_batch, tx_batch, w)
+            grad,e = compute_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
             w = w - gamma * grad 
         # compute loss  
@@ -188,8 +188,8 @@ def calculate_logistic_gradient(y, tx, w):
     Takes as input the targeted y, the sample matrix tx and the feature vector w. 
     This function is used when solving gradient based method, such that logistic_regression() and reg_logistic_regression().
     """
-    pred = sigmoid(tx.dot(w))
-    grad = tx.T.dot(pred - y)
+    sig = sigmoid(tx.dot(w))
+    grad = tx.T.dot(sig - y)
     return grad
 
 
@@ -227,7 +227,7 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
     return w, losses[-1]
 
 
-def learning_by_penalized_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
+def calculate_penalized__logistic_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     """
     Compute one step of gradient descent for regularized logistic regression.
     Takes as input the targeted y, the sample matrix tx, the feature vector w, the learning rate gamma and the
@@ -267,7 +267,7 @@ def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, ga
         # get loss and update w.
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             #w, l_ = learning_by_penalized_gradient_descent(y_batch, tx_batch, w, gamma, lambda_)
-            w = learning_by_penalized_gradient(y_batch, tx_batch, w, gamma, lambda_)
+            w = calculate_penalized__logistic_gradient(y_batch, tx_batch, w, gamma, lambda_)
             # converge criterion
             #loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
             y_pred = predict_logistic_labels(w, tx)

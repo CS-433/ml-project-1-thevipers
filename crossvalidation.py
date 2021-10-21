@@ -144,7 +144,7 @@ def cross_validation_least_squares_SGD(y, x, k_fold, gammas, degrees, seed=1, in
                 # form data with polynomial degree
                 tx_tr = build_poly(x_tr, degree)
                 tx_te = build_poly(x_te, degree)
-                # ridge regression
+                # SGD
                 w, loss_tr = least_squares_SGD(y_tr, tx_tr, initial_w, batch_size, max_iters, gamma)
                 # calculate the loss for train and test data
                 y_pred_te = predict_labels(w, tx_te)
