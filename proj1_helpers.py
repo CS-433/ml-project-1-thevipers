@@ -38,7 +38,9 @@ def sigmoid(t):
     """
     Apply the sigmoid function on t.
     """
-    return 1/ (1 + np.exp(-t))
+    #return 1/ (1 + np.exp(-t/10**4)**(10**4))
+    #Trick pour eviter les running time, mais marche pas tout àa fait, cela dit y a pas d'erreur en tant que telle
+    return 1/ (1 + np.exp(-t))    
 
 
 

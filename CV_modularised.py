@@ -110,9 +110,9 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
         best_err_tr.append(acc_tr)
         best_err_te.append(acc_te)     
     # find the degree which leads to the minimum test error
-    ind_best_param =  np.argmin(best_err_te)      
+    ind_best_param =  np.argmin(1-best_err_te)      
         
-    return params[ind_best_param], best_err_te[ind_best_param], best_err_tr[ind_best_param]
+    return params[ind_best_param], 1-best_err_te[ind_best_param], 1-best_err_tr[ind_best_param]
     
     
 
@@ -148,13 +148,13 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
                 acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                         lambda_=lambda_, gamma=gamma, log=log, **kwargs)
                 # store the mean error over the k-folds for each lambda
-                err_tr_gam.append(acc_tr)
-                err_te_gam.append(acc_te)  
+                err_tr_gam.append(1-acc_tr)
+                err_te_gam.append(1-acc_te)  
                 
             # find the optimal gamma which lead to the minimum test error for the current degree and lambda
             # and store the optimal gamma, the minimum test error, and the train error for each lambdas
             ind_gam_opt = np.argmin(err_te_gam)
-            best_gammas.append(gammas[ind_gam_opt])
+            best_gammas_tmp.append(gammas[ind_gam_opt])
             err_te.append(err_te_gam[ind_gam_opt])
             err_tr.append(err_tr_gam[ind_gam_opt])
             
@@ -167,7 +167,8 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
         best_err_tr.append(err_tr[ind_lambda_opt])
             
     # find the degree which leads to the minimum test error
-    ind_best_degree =  np.argmin(best_err_te)   
+    ind_best_degree =  np.argmin(best_err_te)
+    print(best_err_te)
         
     return degrees[ind_best_degree], best_gammas[ind_best_degree], best_lambdas[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
 
@@ -194,8 +195,8 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
             #Call the function cross validation which returns the mean accuracy of the training and the test set
             acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
             # store the mean error over the k-folds for each lambda
-            err_tr.append(acc_tr)
-            err_te.append(acc_te)     
+            err_tr.append(1-acc_tr)
+            err_te.append(1-acc_te)     
         # find the optimal lambda which lead to the minimum test error for the current degree
         # and store the optimal lambda, the minimum test error, and the train error for the same lambda 
         ind_gamma_opt = np.argmin(err_te)
@@ -230,8 +231,8 @@ def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1,
             acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                                       lambda_=lambda_, log=log, **kwargs)
             # store the mean error over the k-folds for each lambda
-            err_tr.append(acc_tr)
-            err_te.append(acc_te)     
+            err_tr.append(1-acc_tr)
+            err_te.append(1-acc_te)     
         # find the optimal lambda which lead to the minimum test error for the current degree
         # and store the optimal lambda, the minimum test error, and the train error for the same lambda 
         ind_lambda_opt = np.argmin(err_te)
@@ -259,8 +260,8 @@ def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, **kwargs) :
         #Call the function cross validation which returns the mean accuracy of the training and the test set
         acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, log=log, **kwargs)
         # store the mean error over the k-folds for each degree
-        best_err_tr.append(acc_tr)
-        best_err_te.append(acc_te)     
+        best_err_tr.append(1-acc_tr)
+        best_err_te.append(1-acc_te)     
     # find the degree which leads to the minimum test error
     ind_best_degree =  np.argmin(best_err_te)      
         
