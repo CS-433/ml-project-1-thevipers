@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """ML methods."""
 import numpy as np
-from proj1_helpers import *
 
 
 ##########
-#losses :
+# losses :
 def compute_mse(y, tx, w):
     """
     Compute the Mean Square Error.
@@ -17,15 +16,14 @@ def compute_mse(y, tx, w):
 
 def compute_rmse(y, tx, w):
     """
-    Compute the Mean Square Error.
+    Compute the Root Mean Square Error.
     Take as input the targeted y, the sample matrix tx and the feature vector w. 
     """
-    e = y - tx.dot(w)
-    mse = 1/2*np.mean(e**2)
+    mse = compute_mse(y, tx, w)
     rmse = np.sqrt(2*mse)
     return rmse
 
-def calculate_logistic_loss(y, tx, w):
+def compute_logistic_loss(y, tx, w):
     """
     Compute the cost by negative log likelihood.
     Takes as input the targeted y, the sample matrix tx and the feature fector w.
@@ -34,18 +32,56 @@ def calculate_logistic_loss(y, tx, w):
     loss = y.T.dot(np.log(eta)) + (1 - y).T.dot(np.log(1 - eta))
     return np.squeeze(- loss)
 
-#A checker si fonctionne
-def accuracy(y, tx, w, log=False) :
+def predict_labels(weights, x):
+    """
+    Generates class predictions given weights, and a test data matrix x.
+    """
+    y_pred = x@weights
+    y_pred[np.where(y_pred <= 0)] = -1
+    y_pred[np.where(y_pred > 0)] = 1
+    
+    return y_pred
+
+def sigmoid(t):
+    """
+    Apply the sigmoid function on t.
+    """
+    #return 1/ (1 + np.exp(-t/10**4)**(10**4))
+    #Trick pour eviter les running time, mais marche pas tout àa fait, cela dit y a pas d'erreur en tant que telle
+    return 1/ (1 + np.exp(-t))    
+
+
+def predict_logistic_labels(weights, x):
+    """
+    Generates class predictions given weights, and a test data matrix x.
+    """
+    y_pred = sigmoid(x@weights)
+    y_pred[y_pred < 0.5] = -1
+    y_pred[y_pred > 0.5] = 1
+    
+    return y_pred
+
+def compute_accuracy(y, tx, w, log=False):
+    """
+    Computes the accuracy as the mean of correctly labeled predictions.
+    """
+    sum = 0
     if(log) :
         y_pred = predict_logistic_labels(w, tx)
     else :
         y_pred = predict_labels(w, tx)
-    accuracy = np.mean(np.abs(y-y_pred))
-    return accuracy
+    for idx, y_val in enumerate(y):
+        if y_val == y_pred[idx]:
+            sum += 1
+            
+    return sum / len(y)
 
 
 ##########
-#Method :
+# Methods :
+
+###########
+# Least squares :
 
 def compute_gradient(y, tx, w):
     """
@@ -57,9 +93,6 @@ def compute_gradient(y, tx, w):
     grad = -tx.T.dot(e) / len(e)
     return grad, e
 
-
-###########
-#Least squares :
 
 def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.1):
     """
@@ -73,28 +106,19 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.1):
         * the number of iterations for Gradient Descent
         * the learning rate gamma
     """
-    # Define parameters to store w and loss
+    # define parameters
     if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])  
-    ws = [initial_w] # Initial guess w0 generated randomly
-    w = ws[0]
-    losses = []
+    w = initial_w
+    # start the gradient descent
     for n_iter in range(max_iters):
         # compute gradient
         grad, e = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
-        # store w and loss
-        ws.append(w)
     # compute loss  
-    y_pred = predict_labels(w, tx)
-    loss = compute_loss(y_pred, y)
-    losses.append(loss)
-    if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
-                return w, losses[-1]
-    return w, losses[-1]
+    loss = compute_rmse(y, tx, w)
+    return w, loss
 
-    
-    return (gradient_ws[-1], losses[-1])
  
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -119,7 +143,8 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         start_index = batch_num * batch_size
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
-            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]    
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index] 
+            
 
 def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamma=0.01):
     """
@@ -133,43 +158,37 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamm
         * the maximal number of iterations for SGD max_iters
         * the learning rate gamma
     """
+    # define parameters
     if np.all(initial_w == None): initial_w = np.random.rand(tx.shape[1])
-    # Define parameters to store the last weight vector
-    ws = [initial_w]
-    losses = []
     w = initial_w
+    # start the stochastic gradient descent
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad,e = compute_gradient(y_batch, tx_batch, w)
+            grad, e = compute_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
             w = w - gamma * grad
-            # store w and loss
-            ws.append(w)
         # compute loss  
-        y_pred = predict_labels(w, tx)
-        loss = compute_loss(y_pred, y)
-    return ws[-1], loss
+        loss = compute_rmse(y, tx, w)
+    return w, loss
+
 
 def least_squares(y, tx) :
     """
-     Compute a closed-form solution of the problem y = tx @ w, and the associated error. This method is equivalent 
-     to the minimization problem of finding w such that |y-tx@w||^2 is minimal.
-     Note that this methods provides the global optimum.
-     The error is the mean square error of the targeted y and the solution produced by the least square function.
-     Takes as input the targeted y, and the sample matrix tx.
+    Compute a closed-form solution of the problem y = tx @ w, and the associated error. This method is equivalent 
+    to the minimization problem of finding w such that |y-tx@w||^2 is minimal.
+    Note that this methods provides the global optimum.
+    The error is the mean square error of the targeted y and the solution produced by the least square function.
+    Takes as input the targeted y, and the sample matrix tx.
     """
     a = tx.T.dot(tx)
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
     w = np.linalg.lstsq(a, b, rcond=None)[0]
     # compute loss  
-    y_pred = predict_labels(w, tx)
-    loss = compute_loss(y_pred, y) 
+    loss = compute_rmse(y, tx, w)
     return w, loss
 
-##########
-#Linear regression (ridge)
 
 def ridge_regression(y, tx, lambda_=0.1) :
     """
@@ -178,22 +197,21 @@ def ridge_regression(y, tx, lambda_=0.1) :
     This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 + lambda_*||w||^2 is minimal. 
     The error is the mean square error of the targeted y and the solution produced by the least square function.
     Takes as input the targeted y, the sample matrix X and the regularization term lambda_.
-    """
-       
+    """   
     aI = 2*tx.shape[0]*lambda_ * np.identity(tx.shape[1])
     a = tx.T.dot(tx) + aI
     b = tx.T.dot(y)
     # compute the weight vector and the loss using the MSE
     w = np.linalg.solve(a, b)
     # compute loss  
-    y_pred = predict_labels(w, tx)
-    loss = compute_loss(y_pred, y)  
+    loss = compute_rmse(y, tx, w)
     return w, loss
 
-##########
-#Logistic :
 
-def calculate_logistic_gradient(y, tx, w):
+##########
+# Logistic :
+
+def compute_logistic_gradient(y, tx, w):
     """
     Compute the gradient of the loss with respect to w.
     Takes as input the targeted y, the sample matrix tx and the feature vector w. 
@@ -218,7 +236,7 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
         * the batch_size, which is the number of samples on which the new gradient is computed.
         If set to 1 (by default) it corresponds to SGD, it set to the full number of samples it is Gradient Descent.
     """
-    # init parameters
+    # define parameters
     if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])
     threshold = 1e-8
     losses = []
@@ -226,31 +244,29 @@ def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, ba
     # start the logistic regression
     for iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
-            # get loss and update w.
-            grad = calculate_logistic_gradient(y, tx, w)
+            # compute gradient and update w
+            grad = compute_logistic_gradient(y, tx, w)
             w = w - gamma * grad
             # compute loss  
-            y_pred = predict_logistic_labels(w, tx)
-            loss = compute_loss(y_pred, y) 
+            loss = compute_logistic_loss(y, tx, w)
             losses.append(loss)
-            # converge criterion
+            # convergence criterion
             if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold) :
                 return w, losses[-1] 
     return w, losses[-1]
 
 
-def calculate_penalized__logistic_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
+def compute_penalized_logistic_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     """
     Compute one step of gradient descent for regularized logistic regression.
     Takes as input the targeted y, the sample matrix tx, the feature vector w, the learning rate gamma and the
     regularization term lambda_.
     Return the loss and the updated feature vector w.
     """
-    #loss = calculate_logistic_loss(y, tx, w) + lambda_*np.squeeze(w.T.dot(w))
-    gradient = calculate_logistic_gradient(y, tx, w) + 2*lambda_*w
+    gradient = compute_logistic_gradient(y, tx, w) + 2*lambda_*w
     w = w - gamma * gradient
-    #return w, loss
-    return w
+    loss = compute_logistic_loss(y, tx, w) + lambda_*np.squeeze(w.T.dot(w))
+    return w, loss
 
 def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, gamma=0.01, batch_size=1) :
     """
@@ -273,18 +289,13 @@ def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, ga
     threshold = 1e-8
     losses = []
     w = initial_w
-
     # start the logistic regression
     for iter in range(max_iters):
-        # get loss and update w.
+        # compute gradient and update w
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
-            #w, l_ = learning_by_penalized_gradient_descent(y_batch, tx_batch, w, gamma, lambda_)
-            w = calculate_penalized__logistic_gradient(y_batch, tx_batch, w, gamma, lambda_)
-            # converge criterion
-            #loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
-            y_pred = predict_logistic_labels(w, tx)
-            loss = compute_loss(y_pred, y) 
+            w, loss = compute_penalized_logistic_gradient(y_batch, tx_batch, w, gamma, lambda_)
             losses.append(loss)
+            # convergence criterion
             if (len(losses) > 1) and (np.abs(losses[-1] - losses[-2]) < threshold):
                 return w, losses[-1]
     return w, losses[-1]

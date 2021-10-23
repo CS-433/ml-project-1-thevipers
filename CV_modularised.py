@@ -2,7 +2,6 @@
 """cross validation"""
 import numpy as np
 from implementations import *
-from proj1_helpers import *
 from preprocessing import *
 
 def split_data(x, y, ratio, seed=1):
@@ -46,10 +45,10 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
     acc_train=[]
     acc_test=[]
     
-    #Cross-validation repeated for each fold (at each iteration the test set is different)
+    # cross-validation repeated for each fold (at each iteration the test set is different)
     for k in range(k_fold) :
         
-        #Split the train and test sets
+        # split the train and test sets
         test_i = k_indices[k]
         train_i = (np.delete(k_indices, k, axis=0)).reshape(-1)
         test_x = x[test_i]
@@ -61,7 +60,7 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
         train_x = build_poly(train_x, degree)
         test_x = build_poly(test_x, degree)
         
-        #Compute the weights
+        # compute the weights
         if(lambda_==None) :
             if(gamma==None) :
                 w, loss = method(train_y, train_x, **kwargs)
@@ -74,10 +73,10 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
                 w, loss = method(train_y, train_x, lambda_=lambda_, gamma=gamma, **kwargs)
 
         # calculate the accuracy for train and test data
-        acc_train.append(accuracy(train_y, train_x, w, log))
-        acc_test.append(accuracy(test_y, test_x, w, log))
+        acc_train.append(compute_accuracy(train_y, train_x, w, log))
+        acc_test.append(compute_accuracy(test_y, test_x, w, log))
     
-    #Average the accuracies over the 'k_fold' folds
+    # average the accuracies over the 'k_fold' folds
     acc_tr = np.mean(acc_train)
     acc_te = np.mean(acc_test)
     
@@ -88,7 +87,7 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     """
     Tune one of the following parameters : degree, lambda or gamma
     This function can take any of the six methods and tune the parameter we want to optimize.
-    It returns the optimal parameter, the best test error and the best training error
+    It returns the optimal parameter, the best test accuracy and the best training accuracy
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
@@ -97,7 +96,7 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     best_err_tr = []
     # vary degree
     for param in params:
-        #Call the function cross validation which returns the mean accuracy of the training and the test set
+        # call the function cross validation which returns the mean accuracy of the training and the test set
         if(name== 'degree') :
             acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
         elif(name== 'lambda') :
@@ -106,19 +105,19 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
             acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
         else :
             raise NameError(name, ' is not a name of one of the tunable parameters')
-        # store the mean error over the k-folds for each degree
-        best_err_tr.append(acc_tr)
-        best_err_te.append(acc_te)     
-    # find the degree which leads to the minimum test error
-    ind_best_param =  np.argmin(1-best_err_te)      
+        # store the mean accuracy over the k-folds for each degree
+        best_acc_tr.append(acc_tr)
+        best_acc_te.append(acc_te)     
+    # find the degree which leads to the maximum accuracy
+    ind_best_param =  np.argmax(best_acc_te)      
         
-    return params[ind_best_param], 1-best_err_te[ind_best_param], 1-best_err_tr[ind_best_param]
+    return params[ind_best_param], best_acc_te[ind_best_param], best_acc_tr[ind_best_param]
     
     
 
 ####################################################################################################################
-#The following functions aim to tune parameters simultaneously. It can be better in general, but are a bit heavy in term of 
-#computational cost.
+# The following functions aim to tune parameters simultaneously. It can be better in general, but are a bit heavy in term of 
+# computational cost.
 
 def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=False, seed=1, **kwargs) : 
     """
@@ -126,51 +125,51 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
-    # for each degree, we compute the best gammas and the associated test and train error
+    # for each degree, we compute the best gammas and the associated test and train accuracy
     best_lambdas = []
     best_gammas = []
-    best_err_te = []
-    best_err_tr = []
+    best_acc_te = []
+    best_acc_tr = []
     # vary degree
     for degree in degrees:
-        # define lists to store the loss of training data and test data for each degree
-        err_tr = []
-        err_te = []
+        # define lists to store the accuracy of training data and test data for each degree
+        acc_tr = []
+        acc_te = []
         best_gammas_tmp = []
         #vary lambda
         for lambda_ in lambdas:
-            # define lists to store the loss of training data and test data for each degree
-            err_tr_gam = []
-            err_te_gam = []
+            # define lists to store the accuracy of training data and test data for each degree
+            acc_tr_gam = []
+            acc_te_gam = []
             #vary lambda
             for gamma in gammas:
                 #Call the function cross validation which returns the mean accuracy of the training and the test set
                 acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                         lambda_=lambda_, gamma=gamma, log=log, **kwargs)
                 # store the mean error over the k-folds for each lambda
-                err_tr_gam.append(1-acc_tr)
-                err_te_gam.append(1-acc_te)  
+                acc_tr_gam.append(acc_tr)
+                acc_te_gam.append(acc_te)  
                 
-            # find the optimal gamma which lead to the minimum test error for the current degree and lambda
-            # and store the optimal gamma, the minimum test error, and the train error for each lambdas
-            ind_gam_opt = np.argmin(err_te_gam)
+            # find the optimal gamma which lead to the maximum test accuracy for the current degree and lambda
+            # and store the optimal gamma, the maximum test accuracy, and the train accuracy for each lambdas
+            ind_gam_opt = np.argmax(acc_te_gam)
             best_gammas_tmp.append(gammas[ind_gam_opt])
-            err_te.append(err_te_gam[ind_gam_opt])
-            err_tr.append(err_tr_gam[ind_gam_opt])
+            acc_te.append(acc_te_gam[ind_gam_opt])
+            acc_tr.append(acc_tr_gam[ind_gam_opt])
             
-        # find the optimal lambda which lead to the minimum test error for the current degree
-        # and store the optimal lambda, the minimum test error, and the train error for the same lambda 
-        ind_lambda_opt = np.argmin(err_te)
+        # find the optimal lambda which lead to the maximum test accuracy for the current degree
+        # and store the optimal lambda, the maximum test accuracy, and the train accuracy for the same lambda 
+        ind_lambda_opt = np.argmax(acc_te)
         best_lambdas.append(lambdas[ind_lambda_opt])
         best_gammas.append(best_gammas_tmp[ind_lambda_opt])
-        best_err_te.append(err_te[ind_lambda_opt])
-        best_err_tr.append(err_tr[ind_lambda_opt])
+        best_acc_te.append(acc_te[ind_lambda_opt])
+        best_acc_tr.append(acc_tr[ind_lambda_opt])
             
-    # find the degree which leads to the minimum test error
-    ind_best_degree =  np.argmin(best_err_te)
-    print(best_err_te)
+    # find the degree which leads to the maximum test accuracy
+    ind_best_degree =  np.argmax(best_acc_te)
+    print(best_acc_te)
         
-    return degrees[ind_best_degree], best_gammas[ind_best_degree], best_lambdas[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
+    return degrees[ind_best_degree], best_gammas[ind_best_degree], best_lambdas[ind_best_degree], best_acc_te[ind_best_degree], best_acc_tr[ind_best_degree]
 
     
     
@@ -181,32 +180,32 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
-    # for each degree, we compute the best gammas and the associated test and train error
+    # for each degree, we compute the best gammas and the associated test and train accuracy
     best_gammas = []
-    best_err_te = []
-    best_err_tr = []
+    best_acc_te = []
+    best_acc_tr = []
     # vary degree
     for degree in degrees:
-        # define lists to store the loss of training data and test data for each degree
-        err_tr = []
-        err_te = []
+        # define lists to store the accuracy of training data and test data for each degree
+        acc_tr_deg = []
+        acc_te_deg = []
         # vary gamma
         for gamma in gammas:
-            #Call the function cross validation which returns the mean accuracy of the training and the test set
+            # call the function cross validation which returns the mean accuracy of the training and the test set
             acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
-            # store the mean error over the k-folds for each lambda
-            err_tr.append(1-acc_tr)
-            err_te.append(1-acc_te)     
-        # find the optimal lambda which lead to the minimum test error for the current degree
-        # and store the optimal lambda, the minimum test error, and the train error for the same lambda 
-        ind_gamma_opt = np.argmin(err_te)
+            # store the mean accuracy over the k-folds for each lambda
+            acc_tr_deg.append(acc_tr)
+            acc_te_deg.append(acc_te)     
+        # find the optimal lambda which lead to the maximum test accuracy for the current degree
+        # and store the optimal lambda, the maximum test accuracy, and the train accuracy for the same lambda 
+        ind_gamma_opt = np.argmin(acc_te_deg)
         best_gammas.append(gammas[ind_gamma_opt])
-        best_err_te.append(err_te[ind_gamma_opt])
-        best_err_tr.append(err_tr[ind_gamma_opt])
-    # find the degree which leads to the minimum test error
-    ind_best_degree =  np.argmin(best_err_te)
+        best_acc_te.append(acc_te_deg[ind_gamma_opt])
+        best_acc_tr.append(acc_tr_deg[ind_gamma_opt])
+    # find the degree which leads to the maximum test accuracy
+    ind_best_degree =  np.argmax(best_acc_te)
 
-    return degrees[ind_best_degree], best_gammas[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
+    return degrees[ind_best_degree], best_gammas[ind_best_degree], best_acc_te[ind_best_degree], best_acc_tr[ind_best_degree]
 
 
 
@@ -216,33 +215,33 @@ def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1,
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
-    # for each degree, we compute the best gammas and the associated test and train error
+    # for each degree, we compute the best gammas and the associated test and train accuracy
     best_lambdas = []
-    best_err_te = []
-    best_err_tr = []
+    best_acc_te = []
+    best_acc_tr = []
     # vary degree
     for degree in degrees:
         # define lists to store the loss of training data and test data for each degree
-        err_tr = []
-        err_te = []
-        #vary lambda
+        acc_tr_deg = []
+        acc_te_deg = []
+        # vary lambda
         for lambda_ in lambdas:
-            #Call the function cross validation which returns the mean accuracy of the training and the test set
+            # call the function cross validation which returns the mean accuracy of the training and the test set
             acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                                       lambda_=lambda_, log=log, **kwargs)
-            # store the mean error over the k-folds for each lambda
-            err_tr.append(1-acc_tr)
-            err_te.append(1-acc_te)     
-        # find the optimal lambda which lead to the minimum test error for the current degree
-        # and store the optimal lambda, the minimum test error, and the train error for the same lambda 
-        ind_lambda_opt = np.argmin(err_te)
+            # store the mean accuracy over the k-folds for each lambda
+            acc_tr_deg.append(acc_tr)
+            acc_te_deg.append(acc_te)     
+        # find the optimal lambda which lead to the maximum test accuracy for the current degree
+        # and store the optimal lambda, the maximum test accuracy, and the train accuracy for the same lambda 
+        ind_lambda_opt = np.argmax(acc_te_deg)
         best_lambdas.append(lambdas[ind_lambda_opt])
-        best_err_te.append(err_te[ind_lambda_opt])
-        best_err_tr.append(err_tr[ind_lambda_opt])
-    # find the degree which leads to the minimum test error
-    ind_best_degree =  np.argmin(best_err_te)      
+        best_acc_te.append(acc_te_deg[ind_lambda_opt])
+        best_acc_tr.append(acc_tr_deg[ind_lambda_opt])
+    # find the degree which leads to the maximum test accuracy
+    ind_best_degree =  np.argmax(best_acc_te)      
         
-    return degrees[ind_best_degree], best_lambdas[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
+    return degrees[ind_best_degree], best_lambdas[ind_best_degree], best_acc_te[ind_best_degree], best_acc_tr[ind_best_degree]
 
 
 
@@ -252,17 +251,17 @@ def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, **kwargs) :
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
-    # for each degree, we compute the best gammas and the associated test and train error
-    best_err_te = []
-    best_err_tr = []
+    # for each degree, we compute the best gammas and the associated test and train accuracy
+    best_acc_te = []
+    best_acc_tr = []
     # vary degree
     for degree in degrees:
-        #Call the function cross validation which returns the mean accuracy of the training and the test set
+        # call the function cross validation which returns the mean accuracy of the training and the test set
         acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, log=log, **kwargs)
-        # store the mean error over the k-folds for each degree
-        best_err_tr.append(1-acc_tr)
-        best_err_te.append(1-acc_te)     
-    # find the degree which leads to the minimum test error
-    ind_best_degree =  np.argmin(best_err_te)      
+        # store the mean accuracy over the k-folds for each degree
+        best_acc_tr.append(acc_tr)
+        best_acc_te.append(acc_te)     
+    # find the degree which leads to the maximum test accuracy
+    ind_best_degree =  np.argmax(best_acc_te)      
         
-    return degrees[ind_best_degree], best_err_te[ind_best_degree], best_err_tr[ind_best_degree]
+    return degrees[ind_best_degree], best_acc_te[ind_best_degree], best_acc_tr[ind_best_degree]

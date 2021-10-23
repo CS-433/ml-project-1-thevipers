@@ -24,48 +24,6 @@ def load_csv_data(data_path, sub_sample=False):
     return yb, input_data, ids
 
 
-def predict_labels(weights, x):
-    """
-    Generates class predictions given weights, and a test data matrix x.
-    """
-    y_pred = x@weights
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
-    
-    return y_pred
-
-def sigmoid(t):
-    """
-    Apply the sigmoid function on t.
-    """
-    #return 1/ (1 + np.exp(-t/10**4)**(10**4))
-    #Trick pour eviter les running time, mais marche pas tout àa fait, cela dit y a pas d'erreur en tant que telle
-    return 1/ (1 + np.exp(-t))    
-
-
-
-def predict_logistic_labels(weights, x):
-    """
-    Generates class predictions given weights, and a test data matrix x.
-    """
-    y_pred = sigmoid(x@weights)
-    y_pred[y_pred < 0.5] = -1
-    y_pred[y_pred > 0.5] = 1
-    
-    return y_pred
-
-def compute_loss(y_pred, y):
-    """
-    Computes the loss as the mean of mislabeled predictions.
-    """
-    sum = 0
-    for idx, y_val in enumerate(y):
-        if y_val != y_pred[idx]:
-            sum += 1
-
-    return sum / len(y)
-
-
 def create_csv_submission(ids, y_pred, name):
     """
     Creates an output file in .csv format for submission to Kaggle or AIcrowd

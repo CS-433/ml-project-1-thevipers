@@ -15,8 +15,6 @@ def offset(x) :
     return new_x
 
 
-#Mettre 0 pour ceux qui sont missing values car pas significatif
-#CODE FAIT, MAIS RESTE A DISCUTER SI VRAIMENT BONNE MANIERE DE PROCEDER OU NON....... !!!!
 def missing_values(tx_train, tx_test, threshold=0.9) :
     """
     Count the missing values of each feature and delete columns (features) above a certain threshold of missing values
@@ -31,35 +29,22 @@ def missing_values(tx_train, tx_test, threshold=0.9) :
     new_train = tx_train
     new_test = tx_test
     
-    #List of the meaningless features for samples with PRI_jet_num = 0
-    meaningless0 = [4, 5, 6, 8, 9, 12, 23, 24, 25, 26, 27, 28]
-    #List of the meaningless features for samples with PRI_jet_num = 1
-    meaningless1 = [4, 5, 6, 12, 26, 27, 28]
-    
     for col in range(tx_train.shape[1]) :
         
         feature = new_train[:, col]
         
-     #   if (col in meaningless0) :
-     #       feature[(feature==-999) & (new_train[:, 22]==0.)] = 0
-     #       new_train[:,col] = feature
-     #   if (col in meaningless1) :
-     #       feature[(feature==-999) & (new_train[:, 22]==1.)] = 0
-     #      new_train[:,col] = feature
-            
-     #   else :
-        # We calculate what percentage of missing values there is in each column :
+        # we calculate what percentage of missing values there is in each column :
         miss_vals = np.sum(tx_train[:,col]==-999)/999
         percentage = miss_vals/tx_train[:,0].shape
 
-        # We will change every missing value in the column to the mean of the column (arbitrary choice) :
+        # we will change every missing value in the column to the mean of the column (arbitrary choice) :
         where = np.where(feature!=-999, True, False)
         mean = np.mean(feature, where=where)
         feature[feature==-999] = mean
         new_train[:,col] = feature
 
-        #If the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
-        #because the column is considered useless for the prediction
+        # if the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
+        # because the column is considered useless for the prediction
         if(percentage >= threshold) :
             new_train = np.delete(new_train, col, axis=1)
             new_test = np.delete(new_test, col, axis=1)
@@ -78,13 +63,13 @@ def remove_useless_features(x_train, x_test) :
         explain y
     '''
     
-    #useless features found "by hand" using the vizualisation
+    # useless features found "by hand" using the vizualisation
     useless = [15, 16, 18, 20]
     new_x_train = np.delete(x_train, useless, axis=1)
     new_x_test = np.delete(x_test, useless, axis=1)
     
     print(x_train.shape[1]-new_x_train.shape[1], ' useless features have been removed')
-    #std = 0
+    # std = 0
     std_x = np.std(new_x_train, axis=0)
     idx_std_0 = [i for i, std in enumerate(std_x) if std==0]
     new_x_train_ = np.delete(new_x_train, idx_std_0, axis=1)
@@ -145,13 +130,13 @@ def outliers(x, y) :
     new_y=np.array(y)
     idx_outliers = []
     
-    #Find all the outliers
+    # find all the outliers
     for i in range(new_x.shape[1]) :
         idxs = findOutliers(x[:, i])
         for j, idx in enumerate(idxs) :
             idx_outliers.append(idx)
     
-    #delete the lines containing outliers
+    # delete the lines containing outliers
     if(len(idx_outliers)>0) :
         idx_outliers = np.array(list(set(idx_outliers)))
         new_x = np.delete(new_x, idx_outliers, axis=0)
@@ -202,10 +187,10 @@ def process_data(x_train, x_test, alpha=0):
     """
     Preprocessing: impute missing values, feature engineering, delete outliers and standardization.
     """
-    # Missing Values:
-    # Consider the 0s in the 'PRI_jet_all_pt' as missing values
+    # Missing values:
+    # consider the 0s in the 'PRI_jet_all_pt' as missing values
     x_train[:,-1]=np.where(x_train[:,-1]==0, -999, x_train[:,-1])
-    # Impute missing data
+    # impute missing data
     x_train, x_test = missing_values(x_train, x_test) 
     
     # Feature Engineering:
