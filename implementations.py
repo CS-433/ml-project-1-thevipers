@@ -28,9 +28,10 @@ def compute_logistic_loss(y, tx, w):
     Compute the cost by negative log likelihood.
     Takes as input the targeted y, the sample matrix tx and the feature fector w.
     """
-    eta = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(eta)) + (1 - y).T.dot(np.log(1 - eta))
-    return np.squeeze(- loss)
+    #eta = sigmoid(tx.dot(w))
+    #loss = y.T.dot(np.log(eta)) + (1 - y).T.dot(np.log(1 - eta))
+    #return np.squeeze(- loss)
+    return np.sum(np.log(1+np.exp(tx@w))-y*(tx@w))
 
 def predict_labels(weights, x):
     """
@@ -146,7 +147,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index] 
             
 
-def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=10000, gamma=0.01):
+def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=50, gamma=0.01):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Stochastic Gradient Descent. 
     Takes as input:
@@ -222,7 +223,7 @@ def compute_logistic_gradient(y, tx, w):
     return grad
 
 
-def logistic_regression(y, tx, initial_w = None, max_iters=10000, gamma=0.01, batch_size=1) :
+def logistic_regression(y, tx, initial_w = None, max_iters=50, gamma=0.01, batch_size=1) :
     """
     Compute an estimated solution of the problem y = sigmoid(tx @ w) and the associated error using Gradient Descent or SGD. 
     This method is equivalent to the minimization problem of finding w such that the negative log likelihood is minimal.
@@ -268,7 +269,7 @@ def compute_penalized_logistic_gradient(y, tx, w, gamma=0.01, lambda_=0.1):
     loss = compute_logistic_loss(y, tx, w) + lambda_*np.squeeze(w.T.dot(w))
     return w, loss
 
-def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=10000, gamma=0.01, batch_size=1) :
+def reg_logistic_regression(y, tx, lambda_ , initial_w=None, max_iters=50, gamma=0.01, batch_size=1) :
     """
     Compute an estimated solution of the problem y = sigmoid(tx @ w) and the associated error using Gradient Descent. 
     Note that this method is a variant of logistic_regression() but with an added regularization term lambda_. 

@@ -133,8 +133,8 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
     # vary degree
     for degree in degrees:
         # define lists to store the accuracy of training data and test data for each degree
-        acc_tr = []
-        acc_te = []
+        acc_tr_deg = []
+        acc_te_deg = []
         best_gammas_tmp = []
         #vary lambda
         for lambda_ in lambdas:
@@ -154,20 +154,19 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
             # and store the optimal gamma, the maximum test accuracy, and the train accuracy for each lambdas
             ind_gam_opt = np.argmax(acc_te_gam)
             best_gammas_tmp.append(gammas[ind_gam_opt])
-            acc_te.append(acc_te_gam[ind_gam_opt])
-            acc_tr.append(acc_tr_gam[ind_gam_opt])
+            acc_te_deg.append(acc_te_gam[ind_gam_opt])
+            acc_tr_deg.append(acc_tr_gam[ind_gam_opt])
             
         # find the optimal lambda which lead to the maximum test accuracy for the current degree
         # and store the optimal lambda, the maximum test accuracy, and the train accuracy for the same lambda 
-        ind_lambda_opt = np.argmax(acc_te)
+        ind_lambda_opt = np.argmax(acc_te_deg)
         best_lambdas.append(lambdas[ind_lambda_opt])
         best_gammas.append(best_gammas_tmp[ind_lambda_opt])
-        best_acc_te.append(acc_te[ind_lambda_opt])
-        best_acc_tr.append(acc_tr[ind_lambda_opt])
+        best_acc_te.append(acc_te_deg[ind_lambda_opt])
+        best_acc_tr.append(acc_tr_deg[ind_lambda_opt])
             
     # find the degree which leads to the maximum test accuracy
     ind_best_degree =  np.argmax(best_acc_te)
-    print(best_acc_te)
         
     return degrees[ind_best_degree], best_gammas[ind_best_degree], best_lambdas[ind_best_degree], best_acc_te[ind_best_degree], best_acc_tr[ind_best_degree]
 
