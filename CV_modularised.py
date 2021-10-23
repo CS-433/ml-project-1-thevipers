@@ -92,8 +92,8 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
     # for each degree, we compute the best gammas and the associated test and train error
-    best_err_te = []
-    best_err_tr = []
+    accs_te = []
+    accs_tr = []
     # vary degree
     for param in params:
         # call the function cross validation which returns the mean accuracy of the training and the test set
@@ -106,12 +106,12 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
         else :
             raise NameError(name, ' is not a name of one of the tunable parameters')
         # store the mean accuracy over the k-folds for each degree
-        best_acc_tr.append(acc_tr)
-        best_acc_te.append(acc_te)     
+        accs_tr.append(acc_tr)
+        accs_te.append(acc_te)     
     # find the degree which leads to the maximum accuracy
-    ind_best_param =  np.argmax(best_acc_te)      
+    ind_best_param =  np.argmax(accs_te)      
         
-    return params[ind_best_param], best_acc_te[ind_best_param], best_acc_tr[ind_best_param]
+    return params[ind_best_param], accs_te, accs_tr
     
     
 
