@@ -21,9 +21,6 @@ def missing_values(tx_train, tx_test, threshold=0.9) :
     (by default set to 90%).
     If the percentage is below the threshold, missing values will be kept, but set to the mean of the column.
     Be careful : *missing value = -999*
-    However, we think that for some features it makes no sense to arbitrarly set missing values to the mean as some features 
-    are just meaningless for some samples (for instance : DER_deltaeta_jet_jet is meaningless for samples with 
-    PRI_jet_num = 0). That is why we choose to set those missing values to 0 instead of the mean.
     """
     
     new_train = tx_train
