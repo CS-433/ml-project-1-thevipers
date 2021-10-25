@@ -15,10 +15,10 @@ def offset(x) :
     return new_x
 
 
-def missing_values(tx_train, tx_test, threshold=0.9) :
+def missing_values(tx_train, tx_test, threshold=1) :
     """
     Count the missing values of each feature and delete columns (features) above a certain threshold of missing values
-    (by default set to 90%).
+    (by default set to 100%, i.e. columns containing only missing values).
     If the percentage is below the threshold, missing values will be kept, but set to the mean of the column.
     Be careful : *missing value = -999*
     """
