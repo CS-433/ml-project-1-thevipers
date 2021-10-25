@@ -34,13 +34,13 @@ def missing_values(tx_train, tx_test, threshold=1) :
         miss_vals = np.sum(tx_train[:,col]==-999)/999
         percentage = miss_vals/tx_train[:,0].shape
 
-        # we will change every missing value in the column to the median of the column (arbitrary choice) :
-        where = np.where(feature!=-999, True, False)
+        # we will change every missing value in the column to the mean of the column (arbitrary choice) :
+        #where = np.where(feature!=-999, True, False)
         #mean = np.mean(feature, where=where)
-        median = np.median(feature, where=where)
         #feature[feature==-999] = mean
-        feature[feature==-999] = median
-        new_train[:,col] = feature
+        median = np.median(feature[feature != -999])
+        new_train[:,col] = np.where(new_train[:,col]==-999, median, new_train[:,col])
+        new_test[:,col] = np.where(new_test[:,col]==-999, median, new_test[:,col])
 
         # if the percentage of missing values in a column is above a treshold, we will just completely remove the column, 
         # because the column is considered useless for the prediction
