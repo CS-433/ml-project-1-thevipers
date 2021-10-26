@@ -193,7 +193,7 @@ def build_poly(X, degree):
     # powers
     for deg in range(1,degree+1):
         for i in range(D):
-            phi[:, 1+D*(deg-1)+i ] = np.power(X[:,i],deg)    
+            phi[:, D*(deg-1)+i ] = np.power(X[:,i],deg)    
     return phi  
 
 
