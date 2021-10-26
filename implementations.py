@@ -11,6 +11,8 @@ def compute_mse(y, tx, w):
     Take as input the targeted y, the sample matrix tx and the feature vector w. 
     """
     e = y - tx.dot(w)
+    e[e>1e150] = 1e150
+    e[e<-1e150] = -1e150
     mse = 1/2*np.mean(e**2)
     return mse
 
@@ -28,10 +30,9 @@ def compute_logistic_loss(y, tx, w):
     Compute the cost by negative log likelihood.
     Takes as input the targeted y, the sample matrix tx and the feature fector w.
     """
-    #eta = sigmoid(tx.dot(w))
-    #loss = y.T.dot(np.log(eta)) + (1 - y).T.dot(np.log(1 - eta))
-    #return np.squeeze(- loss)
-    return np.sum(np.log(1+np.exp(tx@w))-y*(tx@w))
+    eta = tx@w
+    eta[eta > 700] = 700
+    return np.sum(np.log(1+np.exp(eta))-y*(eta))
 
 def predict_labels(weights, x):
     """
@@ -47,9 +48,8 @@ def sigmoid(t):
     """
     Apply the sigmoid function on t.
     """
-    #return 1/ (1 + np.exp(-t/10**4)**(10**4))
-    #Trick pour eviter les running time, mais marche pas tout àa fait, cela dit y a pas d'erreur en tant que telle
-    return 1/ (1 + np.exp(-t))    
+    t[t<-700] = -700
+    return (1+np.exp(-t))**(-1)   
 
 
 def predict_logistic_labels(weights, x):
@@ -91,7 +91,7 @@ def compute_gradient(y, tx, w):
     This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
     """
     e = y - tx.dot(w)
-    grad = -tx.T.dot(e) / len(e)
+    grad = -tx.T.dot(e)/ len(e)
     return grad, e
 
 
