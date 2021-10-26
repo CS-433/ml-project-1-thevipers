@@ -13,7 +13,7 @@ def compute_mse(y, tx, w):
     e = y - tx.dot(w)
     e[e>1e150] = 1e150
     e[e<-1e150] = -1e150
-    mse = 1/2*np.mean(e**2)
+    mse = e.dot(e) / (2 * len(e))
     return mse
 
 def compute_rmse(y, tx, w):
