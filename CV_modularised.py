@@ -39,7 +39,20 @@ def build_k_indices(y, k_fold, seed):
 
 def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, gamma=None, log=False, **kwargs):
     """
-    Return the training and test accuracies obtained by cross validation for any of the 6 different methods
+    Perform k-fold cross-validation to select the best model among various degrees with any of the 6 different
+    methods implemented.
+    Return the training and test accuracies obtained by cross validation for any of the 6 different methods. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the indices of the test set k_indices
+        * the number of folds k_fold
+        * the method we want to use method
+        * the various degrees we want to compare degree
+        * the tuning parameter for regularized methods lambda_
+        * the learning rates for methods using gradient descent gamma
+        * the log boolean indicating if we are using a logistic method or not log
+        * other arguments 
     """
     
     acc_train=[]
@@ -86,8 +99,18 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
 def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, **kwargs) :
     """
     Tune one of the following parameters : degree, lambda or gamma
-    This function can take any of the six methods and tune the parameter we want to optimize.
-    It returns the optimal parameter, the best test accuracy and the best training accuracy
+    This function can take any of the six methods implemented and tune the parameter we want to optimize.
+    It returns the optimal parameter as well as the test accuracies and the training accuracies for all the parameters. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the number of folds k_fold
+        * the method we want to use : method
+        * the seed : seed
+        * the parameters we want to compare params
+        * the name of the parameters we want to compare : name. This could be either 'degree', 'lambda', or 'gamma'.
+        * the log boolean indicating if we are using a logistic method or not log
+        * other arguments 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
@@ -121,7 +144,20 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
 
 def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=False, seed=1, **kwargs) : 
     """
-    commenter ++++++
+    Tune the three hyper-parameters : degree, lambda and gamma. 
+    This function can take any of the six methods implemented and tune the parameters we want to optimize.
+    It returns the optimal set of parameters as well as the best associated test accuracy and the associated training accuracy. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the number of folds k_fold
+        * the method we want to use : method
+        * the various degrees we want to compare : degrees
+        * the regularization parameters for regularization lambdas 
+        * the learning rates for gradient descent gammas
+        * the log boolean indicating if we are using a logistic method or not log
+        * the seed : seed
+        * other arguments 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
@@ -175,7 +211,21 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
 
 def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, **kwargs) : 
     """
-    commenter ++++++
+    Tune the two hyper-parameters : degree and gamma. 
+    This function can take any of the six methods implemented and tune the parameters we want to optimize, but we use it for
+    methods which have only gamma and degree parameters to tune (not for the methods which have an additional regularization
+    parameter lambda to tune).
+    It returns the optimal set of parameters as well as the best associated test accuracy and the associated training accuracy. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the number of folds k_fold
+        * the method we want to use : method
+        * the various degrees we want to compare : degrees
+        * the learning rates for gradient descent gammas
+        * the log boolean indicating if we are using a logistic method or not log
+        * the seed : seed
+        * other arguments 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
@@ -210,7 +260,21 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
 
 def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1, **kwargs) : 
     """
-    commenter ++++++
+    Tune the two hyper-parameters : degree and lambda. 
+    This function can take any of the six methods implemented and tune the parameters we want to optimize, but we use it for
+    methods which have only lambda and degree parameters to tune (not for the methods which have an additional learning rate
+    parameter gamma to tune). 
+    It returns the optimal set of parameters as well as the best associated test accuracy and the associated training accuracy. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the number of folds k_fold
+        * the method we want to use : method
+        * the various degrees we want to compare : degrees
+        * the regularization parameters for regularization lambdas 
+        * the log boolean indicating if we are using a logistic method or not log
+        * the seed : seed
+        * other arguments 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
@@ -246,7 +310,18 @@ def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1,
 
 def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, **kwargs) :
     """
-    commenter ++++++
+    Tune the the following hyper-parameter : degree. 
+    This function can take any of the six methods implemented and tune the parameter we want to optimize (i.e. degree).
+    It returns the optimal degree as well as the best associated test accuracy and the associated training accuracy. 
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the number of folds k_fold
+        * the method we want to use : method
+        * the various degrees we want to compare : degrees
+        * the log boolean indicating if we are using a logistic method or not log
+        * the seed : seed
+        * other arguments 
     """
     # split data in k fold
     k_indices = build_k_indices(y, k_fold, seed)
