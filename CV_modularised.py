@@ -63,7 +63,8 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
         
         # split the train and test sets
         test_i = k_indices[k]
-        train_i = (np.delete(k_indices, k, axis=0)).reshape(-1)
+        train_i = k_indices[~(np.arange(k_indices.shape[0]) == k)]
+        train_i = train_i.reshape(-1)
         test_x = x[test_i]
         test_y = y[test_i]
         train_x = x[train_i]

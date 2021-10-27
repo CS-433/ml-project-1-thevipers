@@ -39,7 +39,7 @@ def predict_labels(weights, x):
     Generates class predictions given weights, and a test data matrix x.
     """
     y_pred = x@weights
-    #print('w', weights)
+    y_pred[y_pred > 700] = 700
     y_pred[np.where(y_pred <= 0.5)] = 0
     y_pred[np.where(y_pred > 0.5)] = 1
     
@@ -92,11 +92,11 @@ def compute_gradient(y, tx, w):
     This function is used when solving gradient based method, such that least_squares_GD() and least_squares_SGD().
     """
     e = y - tx.dot(w)
-    grad = -tx.T.dot(e)/ len(e)
-    return grad, e
+    grad = -(tx.T.dot(e))/ len(e)
+    return grad
 
 
-def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.1):
+def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.0001):
     """
     Compute an estimated solution of the problem y = tx @ w and the associated error using Gradient Descent. 
     This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 is minimal. Note that 
@@ -109,12 +109,12 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.1):
         * the learning rate gamma
     """
     # define parameters
-    if np.all(initial_w == None): initial_w = np.zeros(tx.shape[1])  
+    if np.all(initial_w == None): initial_w = np.random.rand(tx.shape[1])
     w = initial_w
     # start the gradient descent
     for n_iter in range(max_iters):
         # compute gradient
-        grad, e = compute_gradient(y, tx, w)
+        grad = compute_gradient(y, tx, w)
         # gradient w by descent update
         w = w - gamma * grad
     # compute loss  
@@ -167,7 +167,7 @@ def least_squares_SGD(y, tx, initial_w=None, batch_size=1, max_iters=50, gamma=0
     for n_iter in range(max_iters):
         for y_batch, tx_batch in batch_iter(y, tx, batch_size=batch_size, num_batches=1):
             # compute a stochastic gradient and loss
-            grad, e = compute_gradient(y_batch, tx_batch, w)
+            grad = compute_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
             w = w - gamma * grad
         # compute loss  
