@@ -39,8 +39,9 @@ def predict_labels(weights, x):
     Generates class predictions given weights, and a test data matrix x.
     """
     y_pred = x@weights
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
+    #print('w', weights)
+    y_pred[np.where(y_pred <= 0.5)] = 0
+    y_pred[np.where(y_pred > 0.5)] = 1
     
     return y_pred
 
@@ -57,7 +58,7 @@ def predict_logistic_labels(weights, x):
     Generates class predictions given weights, and a test data matrix x.
     """
     y_pred = sigmoid(x@weights)
-    y_pred[y_pred < 0.5] = -1
+    y_pred[y_pred <= 0.5] = 0
     y_pred[y_pred > 0.5] = 1
     
     return y_pred

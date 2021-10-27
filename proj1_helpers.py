@@ -11,9 +11,9 @@ def load_csv_data(data_path, sub_sample=False):
     ids = x[:, 0].astype(np.int)
     input_data = x[:, 2:]
 
-    # convert class labels from strings to binary (-1,1)
+    # convert class labels from strings to binary (0,1)
     yb = np.ones(len(y))
-    yb[np.where(y=='b')] = -1
+    yb[np.where(y=='b')] = 0
     
     # sub-sample
     if sub_sample:
