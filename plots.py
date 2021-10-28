@@ -21,3 +21,16 @@ def CV_param_plot(params, acc_tr, acc_te, name_param="degree"):
     plt.grid(True)
     #plt.savefig(name_param+"_CV")
     plt.show()
+    
+def compare(methods, accuracies) :
+    
+    plt.plot(methods, accuracies, 'bo')
+    
+    plt.xticks(rotation=90)
+    plt.xlabel("Method")
+    plt.ylabel("Accuracy")
+    plt.title("Accuracy of each method using its best tuned parameter")
+    plt.grid(True)
+    #plt.savefig("Comparison of methods")
+    plt.show()
+    
