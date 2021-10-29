@@ -78,6 +78,17 @@ def compute_accuracy(y, tx, w, log=False):
             
     return sum / len(y)
 
+def compute_accuracy_(y, y_pred):
+    """
+    Same as bove but using directly y_pred
+    """
+    sum = 0
+    for idx, y_val in enumerate(y):
+        if y_val == y_pred[idx]:
+            sum += 1
+            
+    return sum / len(y)
+
 
 ##########
 # Methods :

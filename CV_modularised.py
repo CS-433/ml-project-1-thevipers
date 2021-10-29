@@ -36,6 +36,8 @@ def build_k_indices(y, k_fold, seed):
     return np.array(k_indices)
 
 
+####################
+#Classical cross-validation and a cross-validation that takes into account the jet_num :
 
 def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, gamma=None, log=False, **kwargs):
     """
@@ -96,6 +98,79 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
     
     return acc_tr, acc_te
 
+def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None, gamma=None, log=False, **kwargs):
+    """
+    Perform the same thing as the cross_validation above, except it will split the data into 3 sub datasets 
+    (according to their jet_num value). 
+    It will also process the data (for instance remove the meaningless features for each of these sub-datasets) before doing 
+    cross validation.
+    """     
+        
+    acc_train=[]
+    acc_test=[]
+
+    # cross-validation repeated for each fold (at each iteration the test set is different)
+    for k in range(k_fold) :
+    
+        # split the train and test sets
+        test_i = k_indices[k]
+        train_i = (np.delete(k_indices, k, axis=0)).reshape(-1)
+        test_x = x[test_i]
+        test_y = y[test_i]
+        train_x = x[train_i]
+        train_y = y[train_i]
+        
+        jet_dict_train = jet_dict(train_x)
+        jet_dict_test = jet_dict(test_x)
+        
+        y_pred_train = np.zeros_like(train_y)
+        y_pred_test = np.zeros_like(test_y)
+        
+        for jet_num in range(jet_dict_train.shape[0]) :
+            
+            x_train_jet = train_x[jet_dict_train[jet_num]]
+            x_test_jet = test_x[jet_dict_test[jet_num]]
+            y_train_jet = train_y[jet_dict_train[jet_num]]
+            
+            x_train_jet, x_test_jet, y_train_jet, y_pred_train = preprocess(x_train_jet, x_test_jet, y_train_jet, y_pred_train)
+
+            # form data with polynomial degree:
+            x_train_jet = build_poly(x_train_jet, degree)
+            x_test_jet = build_poly(x_test_jet, degree)
+            
+            # compute the weights
+            if(lambda_==None) :
+                if(gamma==None) :
+                    w, loss = method(y_train_jet, x_train_jet, **kwargs)
+                else :
+                    w, loss = method(y_train_jet, x_train_jet, gamma=gamma, **kwargs)
+            else :
+                if(gamma==None) :
+                    w, loss = method(y_train_jet, x_train_jet, lambda_=lambda_, **kwargs)
+                else :
+                    w, loss = method(y_train_jet, x_train_jet, lambda_=lambda_, gamma=gamma, **kwargs)
+
+            #Compute y_pred[jet_dict]
+            if log  :
+                y_pred_train[jet_dict_train[jet_num]] = predict_labels(w, x_train_jet)
+                y_pred_test[jet_dict_test[jet_num]] = predict_labels(w, x_test_jet)
+            else :
+                y_pred_train[jet_dict_train[jet_num]] = predict_logistic_labels(w, x_train_jet)
+                y_pred_test[jet_dict_test[jet_num]] = predict_logistic_labels(w, x_test_jet)
+            
+        # calculate the accuracy for train and test data
+        acc_train.append(compute_accuracy_(train_y, y_pred_train))
+        acc_test.append(compute_accuracy_(test_y, y_pred_test))
+
+    # average the accuracies over the 'k_fold' folds
+    acc_tr = np.mean(acc_train)
+    acc_te = np.mean(acc_test)
+    
+    return acc_tr, acc_te
+
+
+####################
+#The following functions use the cross validations function to tune the parameters :
 
 def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, **kwargs) :
     """
