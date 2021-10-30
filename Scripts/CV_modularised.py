@@ -67,15 +67,14 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
         test_i = k_indices[k]
         train_i = k_indices[~(np.arange(k_indices.shape[0]) == k)]
         train_i = train_i.reshape(-1)
-        test_x = x[test_i]
+        test_x = x[test_i, :]
         test_y = y[test_i]
-        train_x = x[train_i]
+        train_x = x[train_i, :]
         train_y = y[train_i]
 
         # form data with polynomial degree:
         train_x = build_poly(train_x, degree)
         test_x = build_poly(test_x, degree)
-        
         # compute the weights
         if(lambda_==None) :
             if(gamma==None) :
@@ -126,9 +125,9 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
         # split the train and test sets
         test_i = k_indices[k]
         train_i = (np.delete(k_indices, k, axis=0)).reshape(-1)
-        test_x = x[test_i]
+        test_x = x[test_i, :]
         test_y = y[test_i]
-        train_x = x[train_i]
+        train_x = x[train_i, :]
         train_y = y[train_i]
         
         jet_dict_train = jet_dict(train_x)
@@ -208,11 +207,11 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     for param in params:
         # call the function cross validation which returns the mean accuracy of the training and the test set
         if(name== 'degree') :
-            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
         elif(name== 'lambda') :
-            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
         elif(name== 'gamma'):
-            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
         else :
             raise NameError(name, ' is not a name of one of the tunable parameters')
         # store the mean accuracy over the k-folds for each degree

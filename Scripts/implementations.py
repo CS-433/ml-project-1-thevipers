@@ -42,7 +42,6 @@ def predict_labels(weights, x):
     y_pred[y_pred > 700] = 700
     y_pred[np.where(y_pred <= 0.5)] = 0
     y_pred[np.where(y_pred > 0.5)] = 1
-    
     return y_pred
 
 def sigmoid(t):

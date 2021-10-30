@@ -5,7 +5,7 @@ from Scripts.preprocessing import *
 from Scripts.CV_modularised import *
 
 
-def predicting_test_labels(method, degree, log, **kwargs) : 
+def predicting_test_labels(method, degree, log, split=True, **kwargs) : 
     """
     Predict the output labels for the test dataset using the selected method.
     Takes as input:
@@ -27,11 +27,66 @@ def predicting_test_labels(method, degree, log, **kwargs) :
     print('TEST  : Shape of y => {sy} \n\tShape of x => {sx}'.format(sy=y_test.shape, sx=x_test.shape)) 
 
 
-    print("Preprocessing the data...")
-    y_pred = np.zeros_like(y_test)
-    x_train, x_test, y_train, _ = preprocess(x_train, x_test, y_train, y_pred, comment=False)
+    #Preprocessing of the data, training of the model and predicting the result :
+    if(split) :
+        test_results = train_with_jet(x_train, x_test, y_train, method, degree, log, **kwargs)
+    else :
+        test_results = train_without_jet(x_train, x_test, y_train, method, degree, log, **kwargs)
 
-    print("Finding the best weights and calculating predictions...")
+    # remapping the labels to {-1/1}    
+    test_results[test_results==0] = -1
+
+    # creating the submission file
+    print("Creating the csv file for submission...")
+    create_csv_submission(ids_test, test_results, OUTPUT_PATH)
+
+    print("DONE!")
+
+    
+    
+def train_with_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
+    """
+    Make the prediction of y using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3})
+    """
+    
+    jet_dict_train = jet_dict(train_x)
+    jet_dict_test = jet_dict(test_x)
+    
+    print("Finding the best weights and calculating predictions by splitting the data according to jet_num...")
+
+    y_pred_test = np.zeros_like(test_x[:,0])
+    for jet_num in range(jet_dict_train.shape[0]) :
+            
+            x_train_jet = train_x[jet_dict_train[jet_num]]
+            x_test_jet = test_x[jet_dict_test[jet_num]]
+            y_train_jet = train_y[jet_dict_train[jet_num]]
+
+            x_train_jet, x_test_jet, y_train_jet= preprocess(x_train_jet, x_test_jet, y_train_jet)
+
+            # form data with polynomial degree:
+            x_train_jet = build_poly(x_train_jet, degree)
+            x_test_jet = build_poly(x_test_jet, degree)
+            
+            #compute the best weights
+            w, _ = method(y_train_jet, x_train_jet, **kwargs)
+
+            #Compute y_pred[jet_dict]
+            if log  :
+                y_pred_test[jet_dict_test[jet_num]] = predict_logistic_labels(w, x_test_jet)
+            else :
+                y_pred_test[jet_dict_test[jet_num]] = predict_labels(w, x_test_jet)
+    
+    return y_pred_test
+
+def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
+    """
+    Make the prediction of y without using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3})
+    """
+    
+    print("Preprocessing the data...")
+    x_train, x_test, y_train = preprocess(x_train, x_test, y_train)
+
+    print("Finding the best weights and calculating predictions without splitting according to jet_num...")
 
     # feature expansion
     x_train_deg = build_poly(x_train, degree)
@@ -45,15 +100,9 @@ def predicting_test_labels(method, degree, log, **kwargs) :
         test_results = predict_logistic_labels(w, x_test_deg)
     else : 
         test_results = predict_labels(w, x_test_deg)
-
-    # remapping the labels to {-1/1}    
-    test_results[test_results==0] = -1
-
-    # creating the submission file
-    print("Creating the csv file for submission...")
-    create_csv_submission(ids_test, test_results, OUTPUT_PATH)
-
-    print("DONE!")
-
+        
+    return test_results
+    
+    
     
 predicting_test_labels(ridge_regression, 8, log=False, lambda_=0.001)    

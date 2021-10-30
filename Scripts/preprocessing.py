@@ -217,7 +217,7 @@ def jet_dict(x):
     return jet_dict_array
 
 
-def preprocess(tX, tX_test, y, outliers=False, comment=False) :
+def preprocess(tX, tX_test, y, outliers_=False, comment=False) :
     """
     This function does the rest of the processsing on the data when we use the jet_num split.
     Indeed, some processing cannot be done before the split step.
@@ -229,7 +229,7 @@ def preprocess(tX, tX_test, y, outliers=False, comment=False) :
     tX_, tX_test_ = missing_values(tX_, tX_test_)
     
     #Delete outliers :
-    if(outliers) :
+    if(outliers_) :
         tX_, y = outliers(tX_, y, alpha=alpha)
 
     # remove features with 0 standard deviation :
