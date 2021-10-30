@@ -55,3 +55,5 @@ def predicting_test_labels(method, degree, log, **kwargs) :
 
     print("DONE!")
 
+    
+predicting_test_labels(ridge_regression, 8, log=False, lambda_=0.001)    
