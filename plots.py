@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""a function of ploting figures."""
+"""Visualisation methods."""
 import numpy as np
 import matplotlib.pyplot as plt
 

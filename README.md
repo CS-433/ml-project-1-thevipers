@@ -30,18 +30,32 @@ And the final results are saved in: `/data/finalsubmission.csv`.
 ***
 ## Project architecture
 
-***
-## Exploration
+### Processing data 
 
-***
-## Feature processing
+`preprocessing.py`: preprocessing training and test data for model training and prediction.
 
-***
-## ML Methods
 
-***
-## How To Generate the Solution
+### Training data
 
-***
-## Additional Comments and Observations
+`implementations.py`: the implementation of 6 methods to train the model : `least_squares_GD`, `least_squares_SGD`, `least_squares`, `ridge_regression`, `logistic_regression` and `reg_logistic_regression` and the associated functions needed to compute the associated losses.
+
+
+### Selecting Model
+
+`CV_modularised.py`: using cross-validation to test the accuracy of different models and searching for the best parameters(lambda, degree etc.) to obtain the best test accuracies.
+
+
+### Predicting test labels
+
+`run.py`: generating the predictions for the test data using the selected best model
+
+### Notebook
+
+`main.ipynb`: data exploration and preprocessing. Tuning the best parameters for the 6 methods and predicting the accuracy of all the methods through cross validation. Analysis and visualisation of the accuracy with different choices of parameters. Comparing the 6 methods and generating the label predictions for the test data.
+ 
+
+### Report
+
+`documents/report.pdf`: a 2-pages report of the project.
+
 
