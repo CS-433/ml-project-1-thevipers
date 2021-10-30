@@ -228,9 +228,15 @@ def preprocess(tX, tX_test, y, outliers=False, comment=False) :
     # we manage the missing values
     tX_, tX_test_ = missing_values(tX_, tX_test_)
     
+<<<<<<< HEAD
     #Delete outliers :
     if(outliers) :
         tX_, y = outliers(tX_, y, alpha=alpha)
+=======
+    # delete outliers :
+    #tX_, y, y_pred = outliers(tX_, y, y_pred)
+
+>>>>>>> 7a225050f2ad1102aeb01d46c99855e5f691e2e9
 
     # remove features with 0 standard deviation :
     tX_, tX_test_= remove_std_0(tX_, tX_test_)
