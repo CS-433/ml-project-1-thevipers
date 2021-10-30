@@ -163,11 +163,11 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
 
             #Compute y_pred[jet_dict]
             if log  :
-                y_pred_train[jet_dict_train[jet_num]] = predict_labels(w, x_train_jet)
-                y_pred_test[jet_dict_test[jet_num]] = predict_labels(w, x_test_jet)
-            else :
                 y_pred_train[jet_dict_train[jet_num]] = predict_logistic_labels(w, x_train_jet)
                 y_pred_test[jet_dict_test[jet_num]] = predict_logistic_labels(w, x_test_jet)
+            else :
+                y_pred_train[jet_dict_train[jet_num]] = predict_labels(w, x_train_jet)
+                y_pred_test[jet_dict_test[jet_num]] = predict_labels(w, x_test_jet)
             
         # calculate the accuracy for train and test data
         acc_train.append(compute_accuracy_(train_y, y_pred_train))
@@ -208,11 +208,11 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     for param in params:
         # call the function cross validation which returns the mean accuracy of the training and the test set
         if(name== 'degree') :
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
         elif(name== 'lambda') :
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
         elif(name== 'gamma'):
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
+            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
         else :
             raise NameError(name, ' is not a name of one of the tunable parameters')
         # store the mean accuracy over the k-folds for each degree

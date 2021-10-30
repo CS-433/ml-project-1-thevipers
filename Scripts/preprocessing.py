@@ -205,7 +205,6 @@ def build_poly(X, degree):
     return phi  
 
 ####################
-'''MODIF HERE'''
 def jet_dict(x):
     """
     Split the data according to the jet_num index, which is in column 22
@@ -227,16 +226,14 @@ def preprocess(tX, tX_test, y, y_pred, comment=False) :
     This function does the rest of the processsing on the data when we use the jet_num split.
     Indeed, some processing cannot be done before the split step.
     """
-        # remove useless features
+    # remove useless features
     tX_, tX_test_= remove_useless_features(tX, tX_test)
 
     # we manage the missing values
     tX_, tX_test_ = missing_values(tX_, tX_test_)
 
-    """
     # delete outliers :
     tX_, y, y_pred = outliers(tX_, y, y_pred)
-    """
 
 
     # remove features with 0 standard deviation :
