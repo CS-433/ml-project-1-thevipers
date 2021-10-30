@@ -1,8 +1,8 @@
 # code for getting the final predictions for the test data
 
-from proj1_helpers import *
-from preprocessing import *
-from CV_modularised import *
+from Scripts.proj1_helpers import *
+from Scripts.preprocessing import *
+from Scripts.CV_modularised import *
 
 
 def predicting_test_labels(method, degree, log, **kwargs) : 

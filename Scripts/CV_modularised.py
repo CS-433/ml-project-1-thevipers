@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """cross validation"""
 import numpy as np
-from implementations import *
-from preprocessing import *
+from Scripts.implementations import *
+from Scripts.preprocessing import *
 
 def split_data(x, y, ratio, seed=1):
     """
