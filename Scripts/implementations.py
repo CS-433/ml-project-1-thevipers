@@ -114,7 +114,7 @@ def least_squares_GD(y, tx, initial_w=None, max_iters=50, gamma=0.0001):
     this method may output a local minimum, while least_squares() provides the global minimum.
     Takes as input:
         * the targeted y
-        * the sample matrix w
+        * the sample matrix tx
         * the initial guess for w, by default set as a vector of zeros
         * the number of iterations for Gradient Descent
         * the learning rate gamma
