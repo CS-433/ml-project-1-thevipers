@@ -142,8 +142,8 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
             x_train_jet = train_x[jet_dict_train[jet_num]]
             x_test_jet = test_x[jet_dict_test[jet_num]]
             y_train_jet = train_y[jet_dict_train[jet_num]]
-            
-            x_train_jet, x_test_jet, y_train_jet, y_pred_train = preprocess(x_train_jet, x_test_jet, y_train_jet, y_pred_train)
+
+            x_train_jet, x_test_jet, y_train_jet= preprocess(x_train_jet, x_test_jet, y_train_jet)
 
             # form data with polynomial degree:
             x_train_jet = build_poly(x_train_jet, degree)

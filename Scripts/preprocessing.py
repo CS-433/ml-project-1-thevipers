@@ -132,7 +132,7 @@ def correlation(tx_train, tx_test, treshold=0.99) :
 ####################
 #Outliers :
 '''MODIF HERE'''
-def outliers(x, y, y_pred=None, alpha=5, comment = False) :
+def outliers(x, y, alpha=5, comment = False) :
     """
     Delete the outliers which are aberrant values, usually due to some errors in the experiment or from the material, 
     usually not relevant and may impact the prediction.
@@ -151,20 +151,15 @@ def outliers(x, y, y_pred=None, alpha=5, comment = False) :
         idx_outliers = np.array(list(set(idx_outliers)))
         new_x = np.delete(new_x, idx_outliers, axis=0)
         y = np.delete(y, idx_outliers, axis=0)
-        if(y_pred != None) :
-            y_pred = np.delete(y_pred, idx_outliers, axis=0)
         if(comment) :
             print('With outliers : ', x.shape)
             print('Without outliers : ', new_x.shape)
-        if(y_pred!=None) :
-            return new_x, y, y_pred
+            return new_x, y
         else :
             return new_x, y
     else :
         if(comment) :
             print('There are no significative outliers')
-        if(y_pred!=None) :
-            return new_x, y, y_pred
         else :
             return new_x, y
 
@@ -208,6 +203,8 @@ def build_poly(X, degree):
 def jet_dict(x):
     """
     Split the data according to the jet_num index, which is in column 22
+    Return an array of 3 arrays of TRUE/FALSE
+    If the 10th sample has a jet_num=0, then the first array will be TRUE at the index 10 and FALSE at the index 10 of the 2 other arrays
     """
     dict_ = {
         0: x[:, 22] == 0,
@@ -220,8 +217,7 @@ def jet_dict(x):
     return jet_dict_array
 
 
-
-def preprocess(tX, tX_test, y, y_pred, comment=False) :
+def preprocess(tX, tX_test, y, outliers=False, comment=False) :
     """
     This function does the rest of the processsing on the data when we use the jet_num split.
     Indeed, some processing cannot be done before the split step.
@@ -231,10 +227,10 @@ def preprocess(tX, tX_test, y, y_pred, comment=False) :
 
     # we manage the missing values
     tX_, tX_test_ = missing_values(tX_, tX_test_)
-
-    # delete outliers :
-    tX_, y, y_pred = outliers(tX_, y, y_pred)
-
+    
+    #Delete outliers :
+    if(outliers) :
+        tX_, y = outliers(tX_, y, alpha=alpha)
 
     # remove features with 0 standard deviation :
     tX_, tX_test_= remove_std_0(tX_, tX_test_)
@@ -256,7 +252,7 @@ def preprocess(tX, tX_test, y, y_pred, comment=False) :
 
     #...
 
-    return tX_, tX_test_, y, y_pred
+    return tX_, tX_test_, y
 
 #heavy tail -> log
 #symmetric -> abs
