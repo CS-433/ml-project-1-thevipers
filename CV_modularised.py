@@ -104,6 +104,17 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
     (according to their jet_num value). 
     It will also process the data (for instance remove the meaningless features for each of these sub-datasets) before doing 
     cross validation.
+    Takes as input:
+        * the targeted y
+        * the sample matrix x
+        * the indices of the test set k_indices
+        * the number of folds k_fold
+        * the method we want to use method
+        * the various degrees we want to compare degree
+        * the tuning parameter for regularized methods lambda_
+        * the learning rates for methods using gradient descent gamma
+        * the log boolean indicating if we are using a logistic method or not log
+        * other arguments
     """     
         
     acc_train=[]

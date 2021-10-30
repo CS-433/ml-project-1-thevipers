@@ -5,8 +5,15 @@ import matplotlib.pyplot as plt
 
 
 
-def CV_param_plot(params, acc_tr, acc_te, name_param="degree"):
-    """visualization the curves of mse_tr and mse_te in function of a tuned parameter"""
+def CV_param_plot(params, acc_tr, acc_te, name_param="degree") :
+    """
+    Visualise the curves of the training accuracy and test accuracy according to a parameter we want to tune.
+    Takes as input:
+        * the different values of the parameter to tune : params
+        * the associated training accuracies : acc_tr
+        * the associated test accuracies : acc_te
+        * the name of the parameter to tune : name_param
+    """
     if(name_param=="degree") :
         plt.plot(params, acc_tr, marker=".", color='b', label='train accuracy')
         plt.plot(params, acc_te, marker=".", color='r', label='test accuracy')
@@ -23,6 +30,12 @@ def CV_param_plot(params, acc_tr, acc_te, name_param="degree"):
     plt.show()
     
 def compare(methods, accuracies) :
+    """
+    Compare and visualise the test accuracies of the different methods we have used.
+    Takes as input:
+        * the name of the methods we want to compare : methods
+        * the associated test accuracies : accuracies
+    """
     
     plt.plot(methods, accuracies, 'bo')
     
