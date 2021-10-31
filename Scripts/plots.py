@@ -38,13 +38,13 @@ def compare(methods, accuracies) :
         * the associated test accuracies : accuracies
     """
     
+    plt.figure(figsize=(10,6)) 
     plt.plot(methods, accuracies, 'bo')
     
-    plt.xticks(rotation=90)
-    plt.xlabel("Method")
-    plt.ylabel("Accuracy")
+    plt.xticks(rotation=45, fontsize=15)
+    plt.ylabel("Accuracy", fontsize=15)
     plt.ylim(0,1)
-    plt.title("Accuracy of each method using its best tuned parameter")
+    plt.title("Accuracy of each method using its best tuned parameter", fontsize=15)
     plt.grid(True)
     plt.savefig("Comparison of methods", dpi=300, bbox_inches='tight')
     plt.show()
