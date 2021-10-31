@@ -190,7 +190,7 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
 ####################
 #The following functions use the cross validations function to tune the parameters :
 
-def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, **kwargs) :
+def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, jet=False, **kwargs) :
     """
     Tune one of the following parameters : degree, lambda or gamma
     This function can take any of the six methods implemented and tune the parameter we want to optimize.
@@ -215,11 +215,20 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
     for param in params:
         # call the function cross validation which returns the mean accuracy of the training and the test set
         if(name== 'degree') :
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
+            if(jet) :
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)
+            else :
+                acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=param, log=log, **kwargs)                
         elif(name== 'lambda') :
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
+            if(jet) :
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)
+            else :
+                acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, lambda_=param, log=log, **kwargs)                
         elif(name== 'gamma'):
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
+            if(jet) :
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)
+            else :
+                acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, gamma=param, log=log, **kwargs)                
         else :
             raise NameError(name, ' is not a name of one of the tunable parameters')
         # store the mean accuracy over the k-folds for each degree
@@ -236,7 +245,7 @@ def tune_best_one(y, x, k_fold, method, seed, params, name='degree', log=False, 
 # The following functions aim to tune parameters simultaneously. It can be better in general, but are a bit heavy in term of 
 # computational cost.
 
-def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=False, seed=1, **kwargs) : 
+def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=False, seed=1, jet=False, **kwargs) : 
     """
     Tune the three hyper-parameters : degree, lambda and gamma. 
     This function can take any of the six methods implemented and tune the parameters we want to optimize.
@@ -274,7 +283,11 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
             #vary lambda
             for gamma in gammas:
                 #Call the function cross validation which returns the mean accuracy of the training and the test set
-                acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
+                if(jet) :
+                    acc_tr, acc_te = cross_validation_jet(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
+                                                                        lambda_=lambda_, gamma=gamma, log=log, **kwargs)
+                else :
+                    acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                         lambda_=lambda_, gamma=gamma, log=log, **kwargs)
                 # store the mean error over the k-folds for each lambda
                 acc_tr_gam.append(acc_tr)
@@ -303,7 +316,7 @@ def tune_best_deg_lam_gam(y, x, k_fold, method, degrees, lambdas, gammas, log=Fa
     
     
 
-def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, **kwargs) : 
+def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, jet=False, **kwargs) : 
     """
     Tune the two hyper-parameters : degree and gamma. 
     This function can take any of the six methods implemented and tune the parameters we want to optimize, but we use it for
@@ -335,7 +348,10 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
         # vary gamma
         for gamma in gammas:
             # call the function cross validation which returns the mean accuracy of the training and the test set
-            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
+            if(jet) :
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
+            else :
+                acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
             # store the mean accuracy over the k-folds for each lambda
             acc_tr_deg.append(acc_tr)
             acc_te_deg.append(acc_te)     
@@ -352,7 +368,7 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
 
 
 
-def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1, **kwargs) : 
+def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1, jet=False, **kwargs) : 
     """
     Tune the two hyper-parameters : degree and lambda. 
     This function can take any of the six methods implemented and tune the parameters we want to optimize, but we use it for
@@ -384,7 +400,11 @@ def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1,
         # vary lambda
         for lambda_ in lambdas:
             # call the function cross validation which returns the mean accuracy of the training and the test set
-            acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
+            if(jet) :
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
+                                                                                      lambda_=lambda_, log=log, **kwargs)
+            else :
+                acc_tr, acc_te = cross_validation(y, x, k_indices=k_indices, k_fold=k_fold, method=method, degree=degree,
                                                                                       lambda_=lambda_, log=log, **kwargs)
             # store the mean accuracy over the k-folds for each lambda
             acc_tr_deg.append(acc_tr)
@@ -402,7 +422,7 @@ def tune_best_deg_lam(y, x, k_fold, method, degrees, lambdas, log=False, seed=1,
 
 
 
-def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, **kwargs) :
+def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, jet=False, **kwargs) :
     """
     Tune the the following hyper-parameter : degree. 
     This function can take any of the six methods implemented and tune the parameter we want to optimize (i.e. degree).
@@ -425,7 +445,10 @@ def tune_best_deg(y, x, k_fold, method, degrees, log=False, seed=1, **kwargs) :
     # vary degree
     for degree in degrees:
         # call the function cross validation which returns the mean accuracy of the training and the test set
-        acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, log=log, **kwargs)
+        if(jet) :
+            acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=degree, log=log, **kwargs)
+        else :
+            acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, log=log, **kwargs)            
         # store the mean accuracy over the k-folds for each degree
         best_acc_tr.append(acc_tr)
         best_acc_te.append(acc_te)     
