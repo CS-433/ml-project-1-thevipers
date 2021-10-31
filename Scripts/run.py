@@ -84,7 +84,7 @@ def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     """
     
     print("Preprocessing the data...")
-    x_train, x_test, y_train = preprocess(x_train, x_test, y_train)
+    x_train, x_test, y_train = preprocess(x_train, x_test, y_train, outliers_=True)
 
     print("Finding the best weights and calculating predictions without splitting according to jet_num...")
 
