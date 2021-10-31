@@ -23,6 +23,7 @@ def CV_param_plot(params, acc_tr, acc_te, name_param="degree") :
         
     plt.xlabel(name_param)
     plt.ylabel("Accuracy")
+    plt.ylim(0,1)
     plt.title("Accuracy in function of the "+name_param+" using cross-validation")
     plt.legend(loc=2)
     plt.grid(True)
@@ -42,8 +43,9 @@ def compare(methods, accuracies) :
     plt.xticks(rotation=90)
     plt.xlabel("Method")
     plt.ylabel("Accuracy")
+    plt.ylim(0,1)
     plt.title("Accuracy of each method using its best tuned parameter")
     plt.grid(True)
-    #plt.savefig("Comparison of methods")
+    plt.savefig("Comparison of methods", dpi=300, bbox_inches='tight')
     plt.show()
     
