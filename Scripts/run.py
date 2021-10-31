@@ -15,9 +15,9 @@ def predicting_test_labels(method, degree, log, split=True, **kwargs) :
         * other arguments
     """
     # files need to be unziped before load
-    DATA_TRAIN_PATH = 'Data/train.csv' 
-    DATA_TEST_PATH  = 'Data/test.csv' 
-    OUTPUT_PATH = 'Data/results.csv' 
+    DATA_TRAIN_PATH = '../Data/train.csv' 
+    DATA_TEST_PATH  = '../Data/test.csv' 
+    OUTPUT_PATH = '../Data/results.csv' 
 
     print("Load the data from csv files...")
     y_train, x_train, ids_train = load_csv_data(DATA_TRAIN_PATH)
