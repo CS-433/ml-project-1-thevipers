@@ -23,7 +23,7 @@ def CV_param_plot(params, acc_tr, acc_te, name_param="degree") :
         
     plt.xlabel(name_param)
     plt.ylabel("Accuracy")
-    plt.ylim(0,1)
+    plt.ylim(np.min(acc_te)-0.01,np.max(acc_tr)+0.01)
     plt.title("Accuracy in function of the "+name_param+" using cross-validation")
     plt.legend(loc=2)
     plt.grid(True)
