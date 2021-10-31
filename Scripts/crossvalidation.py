@@ -349,7 +349,8 @@ def tune_best_deg_gam(y, x, k_fold, method, degrees, gammas, log=False, seed=1, 
         for gamma in gammas:
             # call the function cross validation which returns the mean accuracy of the training and the test set
             if(jet) :
-                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
+                acc_tr, acc_te = cross_validation_jet(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma,
+                                                      log=log, **kwargs)
             else :
                 acc_tr, acc_te = cross_validation(y, x, k_indices, k_fold, method, degree=degree, gamma=gamma, log=log, **kwargs)
             # store the mean accuracy over the k-folds for each lambda

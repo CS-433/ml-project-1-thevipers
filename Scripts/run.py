@@ -1,4 +1,5 @@
-# code for getting the final predictions for the test data
+# -*- coding: utf-8 -*-
+"""getting the final predictions for the test data"""
 
 from proj1_helpers import *
 from preprocessing import *
@@ -46,7 +47,15 @@ def predicting_test_labels(method, degree, log, split=True, **kwargs) :
     
 def train_with_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     """
-    Make the prediction of y using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3})
+    Make the prediction of y using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3}).
+    Takes as input:
+        * the training sample matrix : train_x
+        * the test sample matrix : test_x
+        * the training labels : train_y
+        * the name of the method we want to use to predict the labels : method
+        * the degree we use for polynomial expansion of the features : degree
+        * the log boolean indicating if we are using a logistic method or not log
+        * other arguments
     """
     
     jet_dict_train = jet_dict(train_x)
@@ -80,7 +89,15 @@ def train_with_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
 
 def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     """
-    Make the prediction of y without using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3})
+    Make the prediction of y without using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3}).
+    Takes as input:
+        * the training sample matrix : train_x
+        * the test sample matrix : test_x
+        * the training labels : train_y
+        * the name of the method we want to use to predict the labels : method
+        * the degree we use for polynomial expansion of the features : degree
+        * the log boolean indicating if we are using a logistic method or not log
+        * other arguments
     """
     
     print("Preprocessing the data...")
@@ -104,5 +121,6 @@ def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     return test_results
     
     
-    
+################
+# create final submission
 predicting_test_labels(ridge_regression, 8, log=False, lambda_=0.001)    

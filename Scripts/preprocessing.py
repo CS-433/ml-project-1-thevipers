@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-GENERAL DESCRIPTION :
-The pre-processing aims to modify the raw data into an easily analyzed data set
-For instance we can delete the 'useless' features (column of zeros, correlated values,...), standarize,  deal with missing values, NaN, ...
+Preprocessing methods.
 """
 import numpy as np
 
 
 def offset(x) :
     """ 
-    This function aims to add a first column of 1 in X (usually called the offset).
+    This function aims to add a first column of 1 in the sample matrix x (usually called the offset).
+    Takes as input:
+        * the sample matrix : x
     """
     new_x = np.c_[np.ones(x.shape[0]), x]
     return new_x
@@ -21,11 +21,16 @@ def missing_values(tx_train, tx_test, threshold=0.9, comment=False) :
     (by default set to 100%, i.e. columns containing only missing values).
     If the percentage is below the threshold, missing values will be kept, but set to the mean of the column.
     Be careful : *missing value = -999*
+    Takes as input:
+        * the training sample matrix : tx_train
+        * the test sample matrix : tx_test
+        * the threshold above which we delete the features containing too much missing values : threshold
+        * the comment boolean indicating if we want to print indicative comments when running the code : comment
     """
     
     new_train = tx_train
     new_test = tx_test
-    #Columns we will have to delete :
+    # columns we will have to delete :
     cols = []
     
     for col in range(tx_train.shape[1]) :
@@ -54,8 +59,13 @@ def missing_values(tx_train, tx_test, threshold=0.9, comment=False) :
 
 def remove_useless_features(x_train, x_test, comment=False) :
     '''
-    This function removes the useless features of the parameter x : We first remove the features 15, 16, 18 and 20, because we found out
-    those features were useless to explain y according to the visualization plots in the section 'Features' distributions analysis'
+    This function removes the useless features of the parameter x. 
+    We first remove the features 15, 16, 18 and 20, because we found out that those features were useless to explain y
+    according to the visualization plots in the section 'Features' distributions analysis. 
+    Takes as input:
+        * the training sample matrix : x_train
+        * the test sample matrix : x_test
+        * the comment boolean indicating if we want to print indicative comments when running the code : comment
     '''
     
     # useless features found "by hand" using the vizualisation
@@ -69,8 +79,12 @@ def remove_useless_features(x_train, x_test, comment=False) :
 
 def remove_std_0(x_train, x_test, comment=False) :
     '''
-    This function removes the useless features of the parameter x : We remove the features with a standard deviation of 0, because it 
-    means that the feature is useless to explain y
+    This function removes the useless features of the parameter x.
+    We remove the features with a standard deviation of 0, because it means that the feature is useless to explain y.
+    Takes as input:
+        * the training sample matrix : x_train
+        * the test sample matrix : x_test
+        * the comment boolean indicating if we want to print indicative comments when running the code : comment
     '''
     
     new_x_train = x_train
@@ -81,7 +95,8 @@ def remove_std_0(x_train, x_test, comment=False) :
     idx_std_0 = np.argwhere(std_x == 0)
     new_x_train_ = np.delete(new_x_train, idx_std_0, axis=1)
     new_x_test_ = np.delete(new_x_test, idx_std_0, axis=1)
-    if (comment) : print(new_x_train.shape[1]-new_x_train_.shape[1], ' features with a standard deviation equal to 0 have been removed')
+    if (comment) : print(new_x_train.shape[1]-new_x_train_.shape[1],
+                         ' features with a standard deviation equal to 0 have been removed')
 
     return new_x_train_ , new_x_test_
 
@@ -90,6 +105,11 @@ def remove_std_0(x_train, x_test, comment=False) :
 def standardize(x, mean_x=None, std_x=None):
     """
     Standardize the dataset.
+    Takes as input:
+        * the sample matrix : x
+        * the mean used to standardize the sample matrix : mean_x, if none it will compute the mean of the sample matrix x
+        * the standard deviation used to standardize the sample matrix : std_x, if none it will compute the std of
+        the sample matrix x
     """
     if mean_x is None:
         mean_x = np.mean(x, axis=0)
@@ -109,7 +129,11 @@ def standardize(x, mean_x=None, std_x=None):
 #Not used in the code
 def correlation(tx_train, tx_test, treshold=0.99) :
     """
-    May be useful if we want to delete very correlated features
+    Delete very correlated features. 
+    Takes as input:
+        * the training sample matrix : tx_train
+        * the test sample matrix : tx_test
+        * the correlation threshold above which we delete one of the two very correlated features : threshold
     """
     
     new_train = tx_train
@@ -135,6 +159,11 @@ def outliers(x, y, alpha=5, comment = False) :
     """
     Delete the outliers which are aberrant values, usually due to some errors in the experiment or from the material, 
     usually not relevant and may impact the prediction.
+    Takes as input:
+        * the sample matrix : x
+        * the associated labels : y
+        * the parameter which defines the quantiles we use : alpha 
+        * the comment boolean indicating if we want to print indicative comments when running the code : comment
     """
     new_x=np.array(x)
     idx_outliers = []
@@ -165,8 +194,12 @@ def outliers(x, y, alpha=5, comment = False) :
 
 def findOutliers(x, alpha, outlierConstant=1.5):
     """
-    Find the outliers using the Interquartile (IQR) method
-    Return the indices of the outliers
+    Find the outliers using the Interquantile (IQR) method with the quantiles defined by the parameter alpha.
+    Return the indices of the outliers.
+    Takes as input:
+        * the sample matrix : x
+        * the parameter which defines the quantiles we use : alpha 
+        * the parameter which defines how far from the quantiles data points are considered as outliers : outlierConstant
     """
     a = np.array(x)
     upper_quartile = np.percentile(a, 100-alpha)
@@ -184,8 +217,11 @@ def findOutliers(x, alpha, outlierConstant=1.5):
 
 def build_poly(X, degree):
     """
-    Feature engineering by polynomial expansion: add an intercept and for each feature,
-    add a polynomial expansion from 1 to degree.
+    Feature engineering by polynomial expansion: add an intercept and for each feature, add a polynomial expansion
+    from 1 to degree.
+    Takes as input:
+        * the sample matrix : X
+        * the degree for polynomial expansion : degree
     """
     #if length ....
     N, D = X.shape 
@@ -201,9 +237,12 @@ def build_poly(X, degree):
 ####################
 def jet_dict(x):
     """
-    Split the data according to the jet_num index, which is in column 22
-    Return an array of 3 arrays of TRUE/FALSE
-    If the 10th sample has a jet_num=0, then the first array will be TRUE at the index 10 and FALSE at the index 10 of the 2 other arrays
+    Split the data according to the jet_num index, which is in column 22. 
+    Return an array of 3 arrays of TRUE/FALSE.
+    If the 10th sample has a jet_num=0, then the first array will be TRUE at the index 10 and FALSE at the index 10 of
+    the 2 other arrays.
+    Takes as input:
+        * the sample matrix : x
     """
     dict_ = {
         0: x[:, 22] == 0,
@@ -220,6 +259,12 @@ def preprocess(tX, tX_test, y, outliers_=False, comment=False) :
     """
     This function does the rest of the processsing on the data when we use the jet_num split.
     Indeed, some processing cannot be done before the split step.
+    Takes as input:
+        * the training sample matrix : tX
+        * the test sample matrix tX_test
+        * the training labels : y
+        * the outlier boolean indicating if we remove outliers or no : outliers_
+        * the comment boolean indicating if we want to print indicative comments when running the code : comment    
     """
     # remove useless features
     tX_, tX_test_= remove_useless_features(tX, tX_test)
@@ -227,14 +272,12 @@ def preprocess(tX, tX_test, y, outliers_=False, comment=False) :
     # we manage the missing values
     tX_, tX_test_ = missing_values(tX_, tX_test_)
     
-    #Delete outliers :
+    # delete outliers :
     if(outliers_) :
         tX_, y = outliers(tX_, y, alpha=alpha)
 
     # remove features with 0 standard deviation :
     tX_, tX_test_= remove_std_0(tX_, tX_test_)
-
-    # feature engineering
 
     # standardize :
     tX_, mean, std = standardize(tX_)
@@ -248,10 +291,5 @@ def preprocess(tX, tX_test, y, outliers_=False, comment=False) :
         print('Shape of the preprocessed training set : ', tX_.shape)
         print('Number of features removed : ', tX.shape[1] - tX_.shape[1] +1, ' (and 1 offset added)')
         print(' ')
-
-    #...
-
+        
     return tX_, tX_test_, y
-
-#heavy tail -> log
-#symmetric -> abs

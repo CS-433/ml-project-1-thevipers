@@ -195,7 +195,7 @@ def ridge_regression(y, tx, lambda_=0.1) :
     is a variant of least_square() but with a regularization term lambda_. 
     This method is equivalent to the minimization problem of finding w such that |y-tx@w||^2 + lambda_*||w||^2 is minimal. 
     The error is the mean square error of the targeted y and the solution produced by the least square function.
-    Takes as input the targeted y, the sample matrix X and the regularization term lambda_.
+    Takes as input the targeted y, the sample matrix tx and the regularization term lambda_.
     """   
     aI = 2*tx.shape[0]*lambda_ * np.identity(tx.shape[1])
     a = tx.T.dot(tx) + aI
