@@ -11,7 +11,7 @@ The project is accomplished by the team `TheVipers` with members:
 - Assia Ouanaya: [@assiaoua](https://github.com/assiaoua)
 - Theau Vannier: [@theauv](https://github.com/theauv)
 
-With a Test Accuracy of xxxx we got the xxxxx-th place out of 228 teams.
+With a Test Accuracy of xxxx we got the xxxxx-th place out of 248 teams.
 
 ### Data
 The data `train.csv` and `test.csv` can be found in https://github.com/epfml/ML_course/tree/master/projects/project1/data, to run the code please download them and place them in a `data` folder. It is important to note that the initial output labels are {-1/1} but we remap them to {0/1} when loading the data.
@@ -29,6 +29,8 @@ And the final results are saved in: `/data/results.csv`.
 ***
 ## Project architecture
 
+All the code files can be found in the folder `Scripts`. 
+
 ### Helper functions
 
 `proj1_helpers.py` : loading CSV training and test data, and creating CSV submission files.
@@ -45,7 +47,7 @@ And the final results are saved in: `/data/results.csv`.
 
 ### Selecting Model
 
-`CV_modularised.py` : using cross-validation to test the accuracy of different models and searching for the best parameters(lambda, degree etc.) to obtain the best test accuracies.
+`crossvalidation.py` : using cross-validation to test the accuracy of different models and searching for the best parameters(lambda, degree etc.) to obtain the best test accuracies.
 
 `plot.py` : visualizing the training and test accuracy for different parameters, comparing the accuracy of different methods.
 
@@ -57,7 +59,9 @@ And the final results are saved in: `/data/results.csv`.
 ### Notebook
 
 `main.ipynb` : data exploration and preprocessing. Tuning the best parameters for the 6 methods and predicting the accuracy of all the methods through cross validation. Analysis and visualisation of the accuracy with different choices of parameters. Comparing the 6 methods and generating the label predictions for the test data.
- 
+
+`main_jet.ipynb` : splitting the data with respect to the `PRIjetnum` variable. Tuning the best parameters for the 6 methods and predicting the accuracy of all the methods through cross validation. Analysis and visualisation of the accuracy with different choices of parameters. Comparing the 6 methods and generating the label predictions for the test data.
+
 
 ### Report
 
