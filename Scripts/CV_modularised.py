@@ -87,9 +87,17 @@ def cross_validation(y, x, k_indices, k_fold, method, degree=1, lambda_=None, ga
             else :
                 w, loss = method(train_y, train_x, lambda_=lambda_, gamma=gamma, **kwargs)
 
+        #Compute y_pred
+        if log  :
+            y_pred_train = predict_logistic_labels(w, train_x)
+            y_pred_test = predict_logistic_labels(w, test_x)
+        else :
+            y_pred_train = predict_labels(w, train_x)
+            y_pred_test = predict_labels(w, test_x)
+            
         # calculate the accuracy for train and test data
-        acc_train.append(compute_accuracy(train_y, train_x, w, log))
-        acc_test.append(compute_accuracy(test_y, test_x, w, log))
+        acc_train.append(compute_accuracy(train_y, y_pred_train))
+        acc_test.append(compute_accuracy(test_y, y_pred_test))
     
     # average the accuracies over the 'k_fold' folds
     acc_tr = np.mean(acc_train)
@@ -169,8 +177,8 @@ def cross_validation_jet(y, x, k_indices, k_fold, method, degree=1, lambda_=None
                 y_pred_test[jet_dict_test[jet_num]] = predict_labels(w, x_test_jet)
             
         # calculate the accuracy for train and test data
-        acc_train.append(compute_accuracy_(train_y, y_pred_train))
-        acc_test.append(compute_accuracy_(test_y, y_pred_test))
+        acc_train.append(compute_accuracy(train_y, y_pred_train))
+        acc_test.append(compute_accuracy(test_y, y_pred_test))
 
     # average the accuracies over the 'k_fold' folds
     acc_tr = np.mean(acc_train)

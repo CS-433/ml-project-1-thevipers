@@ -62,24 +62,11 @@ def predict_logistic_labels(weights, x):
     
     return y_pred
 
-def compute_accuracy(y, tx, w, log=False):
+
+
+def compute_accuracy(y, y_pred):
     """
     Computes the accuracy as the mean of correctly labeled predictions.
-    """
-    sum = 0
-    if(log) :
-        y_pred = predict_logistic_labels(w, tx)
-    else :
-        y_pred = predict_labels(w, tx)
-    for idx, y_val in enumerate(y):
-        if y_val == y_pred[idx]:
-            sum += 1
-            
-    return sum / len(y)
-
-def compute_accuracy_(y, y_pred):
-    """
-    Same as bove but using directly y_pred
     """
     sum = 0
     for idx, y_val in enumerate(y):
