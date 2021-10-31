@@ -3,7 +3,7 @@
 
 from proj1_helpers import *
 from preprocessing import *
-from CV_modularised import *
+from crossvalidation import *
 
 
 def predicting_test_labels(method, degree, log, split=True, **kwargs) : 
@@ -123,4 +123,4 @@ def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     
 ################
 # create final submission
-predicting_test_labels(ridge_regression, 8, log=False, lambda_=0.001)    
+predicting_test_labels(ridge_regression, 4, log=False, split = True, lambda_=1e-6)    
