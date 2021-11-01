@@ -255,7 +255,7 @@ def jet_dict(x):
     return jet_dict_array
 
 
-def preprocess(tX, tX_test, y, outliers_=False, comment=False) :
+def preprocess(tX, tX_test, y, outliers_=False, comment=False, alpha=5) :
     """
     This function does the rest of the processsing on the data when we use the jet_num split.
     Indeed, some processing cannot be done before the split step.

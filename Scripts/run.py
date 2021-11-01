@@ -16,9 +16,9 @@ def predicting_test_labels(method, degree, log, split=True, **kwargs) :
         * other arguments
     """
     # files need to be unziped before load
-    DATA_TRAIN_PATH = '../Data/train.csv' 
-    DATA_TEST_PATH  = '../Data/test.csv' 
-    OUTPUT_PATH = '../Data/results.csv' 
+    DATA_TRAIN_PATH = 'data/train.csv' 
+    DATA_TEST_PATH  = 'data/test.csv' 
+    OUTPUT_PATH = 'data/results.csv' 
 
     print("Load the data from csv files...")
     y_train, x_train, ids_train = load_csv_data(DATA_TRAIN_PATH)
@@ -87,7 +87,7 @@ def train_with_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     
     return y_pred_test
 
-def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
+def train_without_jet(x_train, x_test, y_train, method, degree, log, **kwargs) :
     """
     Make the prediction of y without using the splitting of the data according to the jet_num class of the sample (0, 1, {2, 3}).
     Takes as input:
@@ -123,4 +123,4 @@ def train_without_jet(train_x, test_x, train_y, method, degree, log, **kwargs) :
     
 ################
 # create final submission
-predicting_test_labels(ridge_regression, 4, log=False, split = True, lambda_=1e-6)    
+predicting_test_labels(ridge_regression, 8, log=False, split = False, lambda_= 0.0001)    
