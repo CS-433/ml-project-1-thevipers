@@ -11,7 +11,7 @@ The project is accomplished by the team `TheVipers` with members:
 - Assia Ouanaya: [@assiaoua](https://github.com/assiaoua)
 - Theau Vannier: [@theauv](https://github.com/theauv)
 
-With a Test Accuracy of 0.82 we got the 67-th place out of 458 teams with Submission ID = 163340.
+We obtained a Test Accuracy of 0.811 with Submission ID = 164201.
 
 ### Data
 The data `train.csv` and `test.csv` can be found in https://github.com/epfml/ML_course/tree/master/projects/project1/data, to run the code please download them and place them in a `data` folder. It is important to note that the initial output labels are {-1/1} but we remap them to {0/1} when loading the data.
