@@ -30,7 +30,7 @@ def CV_param_plot(params, acc_tr, acc_te, name_param="degree") :
     #plt.savefig(name_param+"_CV")
     plt.show()
     
-def compare(methods, accuracies) :
+def compare(methods, accuracies, split=False) :
     """
     Compare and visualise the test accuracies of the different methods we have used.
     Takes as input:
@@ -44,7 +44,10 @@ def compare(methods, accuracies) :
     plt.xticks(rotation=45, fontsize=15)
     plt.ylabel("Accuracy", fontsize=15)
     plt.ylim(0,1)
-    plt.title("Accuracy of each method using its best tuned parameter", fontsize=15)
+    if (split):
+        plt.title("With jet split", fontsize=15)
+    else:
+        plt.title("Without jet split", fontsize=15)
     plt.grid(True)
     plt.savefig("Comparison of methods", dpi=300, bbox_inches='tight')
     plt.show()
