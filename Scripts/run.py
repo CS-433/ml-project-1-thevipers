@@ -123,4 +123,4 @@ def train_without_jet(x_train, x_test, y_train, method, degree, log, **kwargs) :
     
 ################
 # create final submission
-predicting_test_labels(ridge_regression, 8, log=False, split = False, lambda_= 0.0001)    
+predicting_test_labels(ridge_regression, 8, log=False, split = False, lambda_= 0.00001)    

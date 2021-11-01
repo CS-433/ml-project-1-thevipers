@@ -11,7 +11,7 @@ The project is accomplished by the team `TheVipers` with members:
 - Assia Ouanaya: [@assiaoua](https://github.com/assiaoua)
 - Theau Vannier: [@theauv](https://github.com/theauv)
 
-With a Test Accuracy of 0.82 we got the 67-th place out of 458 teams with Submission ID = 163340.
+We obtained a Test Accuracy of 0.811 with Submission ID = 164201.
 
 ### Data
 The data `train.csv` and `test.csv` can be found in https://github.com/epfml/ML_course/tree/master/projects/project1/data, to run the code please download them and place them in a `data` folder. It is important to note that the initial output labels are {-1/1} but we remap them to {0/1} when loading the data.
@@ -55,7 +55,7 @@ All the code files can be found in the folder `Scripts`.
 ### Predicting test labels
 
 `run.py`: generating the predictions for the test data using the selected best model. It is important to note that we are working with {0/1} output labels when training our methods but we give back {-1/1} labels for the output predictions in order to be compatible with the AIcrowd submission platform. 
-In the run.py, we call a function 'predicting_test_labels' to which we give the best model with its best hyperparameters found (see the table in the report to have the best hyperparameters for each method).
+In the `run.py`, we call a function`predicting_test_labels` to which we give the best model with its best hyperparameters found (see the table in the report to have the best hyperparameters for each method). If you want to run the `run.py` file, you have to be in the repository `ml-project-1-thevipers` (just above the `Scripts` folder) and to enter the following command in the terminal : `python3 Scripts/run.py`. 
 
 ### Notebook
 
