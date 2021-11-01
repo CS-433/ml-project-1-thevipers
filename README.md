@@ -55,6 +55,7 @@ All the code files can be found in the folder `Scripts`.
 ### Predicting test labels
 
 `run.py` : generating the predictions for the test data using the selected best model. It is important to note that we are working with {0/1} output labels when training our methods but we give back {-1/1} labels for the output predictions in order to be compatible with the AIcrowd submission platform. 
+In the run.py, we call a function 'predicting_test_labels' to which we give the best model with its best hyperparameters we found. You can of course change the model and the hyperparameters in the function (see the table in the report to have the best hyperparameters for each method).
 
 ### Notebook
 
