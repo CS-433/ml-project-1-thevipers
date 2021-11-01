@@ -55,7 +55,7 @@ All the code files can be found in the folder `Scripts`.
 ### Predicting test labels
 
 `run.py`: generating the predictions for the test data using the selected best model. It is important to note that we are working with {0/1} output labels when training our methods but we give back {-1/1} labels for the output predictions in order to be compatible with the AIcrowd submission platform. 
-In the run.py, we call a function`predicting_test_labels` to which we give the best model with its best hyperparameters found (see the table in the report to have the best hyperparameters for each method).
+In the `run.py`, we call a function`predicting_test_labels` to which we give the best model with its best hyperparameters found (see the table in the report to have the best hyperparameters for each method). If you want to run the `run.py` file, you have to be in the repository `ml-project-1-thevipers` (just above the `Scripts` folder) and to enter the following command in the terminal : `python3 Scripts/run.py`. 
 
 ### Notebook
 
